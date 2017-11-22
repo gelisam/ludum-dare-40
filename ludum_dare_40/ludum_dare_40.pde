@@ -72,7 +72,7 @@ class Particle
     pos.x += vel.x;
     pos.y += vel.y;
     vel.y += 0.1f;
-    if( Finished() )
+    if ( Finished() )
       Reset();
   }
   void Draw()
@@ -106,16 +106,45 @@ class Particle
 Particle[] particles;
 
 
+class Segment {
+  PVector s1;
+  PVector s2;
+  PVector vector; // from s1 to s2
+  PVector normalized;
+
+  Segment(PVector s1_, PVector s2_) {
+    s1 = s1_;
+    s2 = s2_;
+    vector = PVector.sub(s2, s1);
+    normalized = vector.copy().normalize(vector);
+  }
+
+  PVector project(PVector p) {
+    PVector v = PVector.sub(p, s1);
+    float projected_v_length = vector.dot(v);
+    PVector projected_v = PVector.mult(normalized, projected_v_length);
+    PVector projected_p = PVector.add(s1, projected_v);
+    return projected_p;
+  }
+  
+  PVector reflect(PVector p) {
+    PVector projected_p = project(p);
+    return PVector.add(projected_p, PVector.sub(projected_p, p));
+  }
+}
+
+
+
 void setup() {
   size(640, 640);
   for (int i=0; i<MAX_POINTS; ++ i) {
     points[i] = new PVector();
     strengths[i] = 0;
   }
-  
+
   // Particles
   particles = new Particle[PARTICLE_COUNT];
-  for( int i=0; i<PARTICLE_COUNT; i++ )
+  for ( int i=0; i<PARTICLE_COUNT; i++ )
   {
     particles[i] = new Particle();
     particles[i].Reset();
@@ -163,8 +192,8 @@ void draw() {
     prev_point = point;
     prev_strength = strength;
   }
-  
-  for( int i=0; i<PARTICLE_COUNT; i++ )
+
+  for ( int i=0; i<PARTICLE_COUNT; i++ )
   {
     particles[i].Update();
     particles[i].Draw();
@@ -178,6 +207,15 @@ void draw() {
   //  else stroke( 255,255,0 );
   //  ellipse( indicator[i].x, indicator[i].y, 20, 20 );
   //}
+  
+  // TEST
+  stroke(0);
+  line(100, 100, 200, 300);
+  Segment segment = new Segment(new PVector(100, 100), new PVector(200, 300));
+  PVector p = new PVector(mouseX, mouseY);
+  PVector r = segment.reflect(p);
+  println(p);
+  ellipse(r.x, r.y, 10, 10);
 }
 
 void mousePressed()

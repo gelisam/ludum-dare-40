@@ -27,5 +27,6 @@ void mouseDragged() {
     points[next_point_index] = new PVector(mouseX, mouseY);
     strength[next_point_index] = 255;
     next_point_index = (next_point_index + 1) % MAX_POINTS;
+    strength[next_point_index] = 0;
   }
 }

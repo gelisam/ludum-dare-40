@@ -208,14 +208,14 @@ void draw() {
   //  ellipse( indicator[i].x, indicator[i].y, 20, 20 );
   //}
   
-  // TEST
-  stroke(0);
-  line(100, 100, 200, 300);
-  Segment segment = new Segment(new PVector(100, 100), new PVector(200, 300));
-  PVector p = new PVector(mouseX, mouseY);
-  PVector r = segment.reflect(p);
-  println(p);
-  ellipse(r.x, r.y, 10, 10);
+  //// TEST
+  //stroke(0);
+  //line(100, 100, 200, 300);
+  //Segment segment = new Segment(new PVector(100, 100), new PVector(200, 300));
+  //PVector p = new PVector(mouseX, mouseY);
+  //PVector r = segment.reflect(p);
+  //println(p);
+  //ellipse(r.x, r.y, 10, 10);
 }
 
 void mousePressed()

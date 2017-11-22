@@ -3,6 +3,8 @@ final int WINDOW_HEIGHT = 640;
 final float PARTICLE_RADIUS = 5.0f;
 final int PARTICLE_COUNT = 100;
 
+final float FADE_TIME = 1.0; // seconds
+
 final int MAX_POINTS = 100;
 PVector[] points = new PVector[MAX_POINTS];
 float[] strengths = new float[MAX_POINTS];
@@ -77,6 +79,18 @@ void setup() {
 
 void draw() {
   background(212);
+
+  // UPDATE
+
+  float dt = 1.0/60; // assuming 60fps
+
+  // make the line fade over time
+  for (int i=0; i<MAX_POINTS; ++i) {
+    strengths[i] -= lerp(0.0, 255.0, dt / FADE_TIME);
+  }
+
+
+  // DRAW
 
   PVector prev_point = points[MAX_POINTS-1];
   float prev_strength = strengths[MAX_POINTS-1];

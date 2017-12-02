@@ -31,6 +31,7 @@ Calendar global_source_calendar;
 Calendar global_target_calendar;
 
 PImage background_image;
+PImage grid_image;
 
 
 void setup() {
@@ -40,6 +41,7 @@ void setup() {
   textAlign(CENTER);
 
   background_image = loadImage("background_paper.png");
+  grid_image = loadImage("background_timeslot.png");
 
 
   Box box;
@@ -243,10 +245,9 @@ class Calendar {
   void draw_grid(int w, int h) {
     stroke(128);
     for (int i=0; i<=w; ++i) {
-      line(i*GRID_WIDTH, 0, i*GRID_WIDTH, h*GRID_HEIGHT);
-    }
-    for (int j=0; j<=h; ++j) {
-      line(0, j*GRID_HEIGHT, w*GRID_WIDTH, j*GRID_HEIGHT);
+      for (int j=0; j<=h; ++j) {
+        image(grid_image, i*GRID_WIDTH, j*GRID_HEIGHT);
+      }
     }
   }
 

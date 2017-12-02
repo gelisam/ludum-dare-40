@@ -15,6 +15,17 @@ void setup() {
   textAlign(CENTER);
 }
 
+void draw_grid(int w, int h) {
+  stroke(128);
+  for (int x=0; x<=w; ++x) {
+    line(x*100, 0, x*100, h*100);
+  }
+  for (int y=0; y<=h; ++y) {
+    line(0, y*100, w*100, y*100);
+  }
+}
+
+
 void draw_box(String name, int x, int y) {
   fill(255);
   rect(x*100, y*100, 60, 59);
@@ -44,23 +55,31 @@ void draw() {
 
   // DRAW
 
+  int w = 4;
+  int h = 3;
   background(215);
+  pushMatrix();
+  translate((WINDOW_WIDTH-w*100)/2, (WINDOW_HEIGHT-h*100)/2); // center
 
-  draw_box("Widget", 1, 1);
-  draw_box("Person", 1, 2);
-  draw_connector(NO_CONNECTOR, 1, 1, 1, 2);
+  draw_grid(w, h);
 
-  draw_box("Bank", 2, 1);
-  draw_box("Account", 2, 2);
-  draw_connector(WHITE_ARROW_CONNECTOR, 2, 1, 2, 2);
+  draw_box("Widget", 0, 0);
+  draw_box("Person", 0, 1);
+  draw_connector(NO_CONNECTOR, 0, 0, 0, 1);
 
-  draw_box("Circle", 3, 1);
-  draw_box("Rectangle", 3, 2);
-  draw_connector(BLACK_DIAMOND_CONNECTOR, 3, 1, 3, 2);
+  draw_box("Bank", 1, 0);
+  draw_box("Account", 1, 1);
+  draw_connector(WHITE_ARROW_CONNECTOR, 1, 0, 1, 1);
 
-  draw_box("Shape", 4, 1);
-  draw_box("Entity", 4, 2);
-  draw_connector(WHITE_DIAMOND_CONNECTOR, 4, 1, 4, 2);
+  draw_box("Circle", 2, 0);
+  draw_box("Rectangle", 2, 1);
+  draw_connector(BLACK_DIAMOND_CONNECTOR, 2, 0, 2, 1);
+
+  draw_box("Shape", 3, 0);
+  draw_box("Entity", 3, 1);
+  draw_connector(WHITE_DIAMOND_CONNECTOR, 3, 0, 3, 1);
+
+  popMatrix();
 
 
   // DEBUG

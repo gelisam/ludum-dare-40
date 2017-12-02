@@ -10,11 +10,11 @@ void setup() {
 
 void draw_box(String name, int x, int y) {
   fill(255);
-  rect(x, y, 60, 60);
-  line(x, y+20, x+60, y+20);
+  rect(x*100, y*100, 60, 60);
+  line(x*100, y*100+20, x*100+60, y*100+20);
 
   fill(0);
-  text(name, x+30, y+15);
+  text(name, x*100+30, y*100+15);
 }
 
 void draw() {
@@ -25,7 +25,9 @@ void draw() {
 
   background(255);
 
-  draw_box("Widget", 100, 50);
+  draw_box("Widget", 3, 1);
+  draw_box("Person", 3, 2);
+  draw_box("Bank", 4, 2);
 
 
   // DEBUG

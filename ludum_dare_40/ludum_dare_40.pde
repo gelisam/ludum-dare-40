@@ -440,6 +440,7 @@ void mouseReleased() {
       if (result == null) {
         display_conflicts();
       } else {
+        global_target_calendar.anchor = global_target_calendar.hover;
         global_target_calendar.diagram = result;
       }
     }

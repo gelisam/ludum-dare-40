@@ -75,6 +75,11 @@ void setup() {
 }
 
 
+void display_conflicts() {
+  global_mode = DISPLAYING_CONFLICTS_MODE;
+  global_t = 0.0;
+}
+
 boolean is_flashing_red() {
   return global_mode == DISPLAYING_CONFLICTS_MODE && (global_t % 0.2 < 0.1);
 }
@@ -292,8 +297,5 @@ void draw() {
 }
 
 void mouseReleased() {
-  if (global_mode == INTERACTIVE_MODE) {
-    global_mode = DISPLAYING_CONFLICTS_MODE;
-    global_t = 0.0;
-  }
+  display_conflicts();
 }

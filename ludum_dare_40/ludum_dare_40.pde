@@ -56,16 +56,6 @@ void setup() {
   global_target_calendar.diagram.boxes.put(new PVector(1, 2), box);
 }
 
-void draw_grid(int w, int h) {
-  stroke(128);
-  for (int i=0; i<=w; ++i) {
-    line(i*GRID_WIDTH, 0, i*GRID_WIDTH, h*GRID_HEIGHT);
-  }
-  for (int j=0; j<=h; ++j) {
-    line(0, j*GRID_HEIGHT, w*GRID_WIDTH, j*GRID_HEIGHT);
-  }
-}
-
 
 class NamePool {
   StringList unused_names = new StringList();
@@ -198,6 +188,16 @@ class Calendar {
 
   void guess_anchor() {
     diagram.guess_anchor();
+  }
+
+  void draw_grid(int w, int h) {
+    stroke(128);
+    for (int i=0; i<=w; ++i) {
+      line(i*GRID_WIDTH, 0, i*GRID_WIDTH, h*GRID_HEIGHT);
+    }
+    for (int j=0; j<=h; ++j) {
+      line(0, j*GRID_HEIGHT, w*GRID_WIDTH, j*GRID_HEIGHT);
+    }
   }
 
   void draw() {

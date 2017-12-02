@@ -320,6 +320,7 @@ class Diagram {
         } else {
           conflicting = true;
           anchor_box.conflicting_connector = true;
+          other_box.conflicting_connector = true;
         }
       } else {
         conflicting = true;

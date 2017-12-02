@@ -30,6 +30,7 @@ final NamePool global_name_pool = new NamePool();
 Calendar global_source_calendar;
 Calendar global_target_calendar;
 
+PFont font;
 PImage background_image;
 PImage timeslot_image;
 
@@ -38,6 +39,8 @@ void setup() {
   size(1280, 800);
 
   stroke(0);
+  font = loadFont("TektonPro-BoldObl-16.vlw");
+  textFont(font, 16);
   textAlign(CENTER);
 
   background_image = loadImage("background_paper.png");

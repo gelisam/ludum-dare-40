@@ -222,16 +222,19 @@ class Diagram {
     return null;
   }
 
-  Diagram merge(Diagram other) {
+  Diagram merge(PVector anchor, Diagram other, PVector other_anchor) {
     Diagram result = new Diagram();
 
     for (PVector delta : boxes.keySet()) {
       Box box = boxes.get(delta);
       result.boxes.put(delta, box);
     }
+
+    PVector anchor_delta = PVector.sub(anchor, other_anchor);
     for (PVector delta : other.boxes.keySet()) {
       Box other_box = other.boxes.get(delta);
-      result.boxes.put(delta, other_box);
+      PVector dest = PVector.add(delta, anchor_delta);
+      result.boxes.put(dest, other_box);
     }
 
     return result;
@@ -316,7 +319,7 @@ void draw() {
 void mouseReleased() {
   if (global_mode == INTERACTIVE_MODE) {
     if (global_target_calendar.anchor != null) {
-      global_target_calendar.diagram = global_target_calendar.diagram.merge(global_source_calendar.diagram);
+      global_target_calendar.diagram = global_target_calendar.diagram.merge(global_target_calendar.anchor, global_source_calendar.diagram, global_source_calendar.anchor);
     } else {
       display_conflicts();
     }

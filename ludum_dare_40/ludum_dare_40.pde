@@ -4,8 +4,8 @@ final int WINDOW_WIDTH = 1280;
 final int WINDOW_HEIGHT = 800;
 final int TIMESLOT_WIDTH = 100;
 final int TIMESLOT_HEIGHT = 100;
-final int CLASS_WIDTH = 60;
-final int CLASS_HEIGHT = 60;
+final int CLASS_WIDTH = 80;
+final int CLASS_HEIGHT = 65;
 final int CLASS_DX = (TIMESLOT_WIDTH - CLASS_WIDTH) / 2;
 final int CLASS_DY = (TIMESLOT_HEIGHT - CLASS_HEIGHT) / 2;
 final int CALENDAR_GAP = 150;
@@ -26,7 +26,7 @@ final int DISPLAYING_CONFLICTS_MODE = 1;
 
 final int BOX_ALPHA = 128;
 
-final float BOX_CORNER_FUDGE = 1.1f;
+final float BOX_CORNER_FUDGE = 1.0f;
 final PVector BOX_CORNER_SCALE = new PVector(BOX_CORNER_FUDGE*CLASS_WIDTH/100.0, BOX_CORNER_FUDGE*CLASS_HEIGHT/100.0);
 // Corners for line intersections, measured from 0-100
 final PVector BOX_CORNER_UL = new PVector( BOX_CORNER_SCALE.x*5, BOX_CORNER_SCALE.y*3 );
@@ -103,11 +103,12 @@ void setup() {
   box.connectors.add(new PVector(0, 1));
   box.connectors.add(new PVector(1, 1));
   global_target_calendar.diagram.boxes.put(new PVector(1, 1), box);
-  println("added target box "+box.name+" with "+box.connectors.size()+" connectors at (1,1)");
 
   box = new Box(NO_CONNECTOR);
   global_target_calendar.diagram.boxes.put(new PVector(1, 2), box);
-  println("added target box "+box.name+" with "+box.connectors.size()+" connectors at (1,2)");
+
+  box = new Box(NO_CONNECTOR);
+  global_target_calendar.diagram.boxes.put(new PVector(2, 2), box);
 }
 
 
@@ -120,7 +121,6 @@ boolean are_connector_types_compatible(int connector_type1, int connector_type2)
 }
 
 
-
 void display_conflicts() {
   global_mode = DISPLAYING_CONFLICTS_MODE;
   global_t = 0.0;
@@ -130,6 +130,24 @@ boolean is_flashing_red() {
   return (global_t % 0.2 < 0.1);
 }
 
+
+class Region {
+  PVector upper_left;
+  PVector lower_right;
+
+  Region(PVector upper_left_, PVector lower_right_) {
+    upper_left = upper_left_;
+    lower_right = lower_right_;
+  }
+
+  boolean contains_int_vector(PVector v) {
+    return (floor(v.x) >= floor(upper_left.x) && floor(v.x) <= floor(lower_right.x) && floor(v.y) >= floor(upper_left.y) && floor(v.y) <= floor(lower_right.y));
+  }
+
+  boolean contains_smaller_region(Region other) {
+    return (floor(other.upper_left.x) >= floor(upper_left.x)) && (floor(other.lower_right.x) <= floor(lower_right.x)) && (floor(other.upper_left.y) >= floor(upper_left.y)) && (floor(other.lower_right.y) <= floor(lower_right.y));
+  }
+}
 
 class NamePool {
   StringList unused_names = new StringList();
@@ -237,23 +255,15 @@ class Box {
     // Draw connector leading line and dot
 
     stroke(0);
-    if( connectors.size()==1 ) {
-      stroke(0,255,0);
-      line(x1, y1+10, x1, y1+30);
+    if ( connectors.size()>0 ) {
+      line(x1, y1+10, x1, y1+23.5);
     }
-    if( connectors.size()==2 ) {
-      stroke(0,0,255);
-      line(x1, y1+10, x1, y1+30);
-    }
-    if( connectors.size()>0 ) {
-      line(x1, y1+10, x1, y1+30);
-    }
-    if( connectors.size()>1 ) {
-      ellipse( x1, y1+30, 4, 4 ); 
+    if ( connectors.size()>1 ) {
+      ellipse( x1, y1+25, 4, 4 );
     }
 
     // Draw connector glyph
-    
+
     if (conflicting_connector && is_flashing_red()) {
       stroke(205, 15, 15);
     } else {
@@ -282,11 +292,10 @@ class Box {
           fill(255);
         }
       }
-      quad(x1, y1, x1-5, y1+5, x1, y1+10, x1+5, y1+5);      
+      quad(x1, y1, x1-5, y1+5, x1, y1+10, x1+5, y1+5);
     }
-    
   }
-  
+
   void draw_connector_line(int i1, int j1, int i2, int j2) {
     int x1 = i1*TIMESLOT_WIDTH+CLASS_DX+CLASS_WIDTH/2;
     int y1 = j1*TIMESLOT_HEIGHT+CLASS_DY+CLASS_HEIGHT;
@@ -294,10 +303,10 @@ class Box {
     int y2 = j2*TIMESLOT_HEIGHT+CLASS_DY;
 
     // Draw connector lines
-    
+
     stroke(0);
-    line(x1, y1+30, x2, y1+30);
-    line(x2, y1+30, x2, y2);
+    line(x1, y1+25, x2, y1+25);
+    line(x2, y1+25, x2, y2);
   }
 
   void draw(int i, int j) {
@@ -352,6 +361,7 @@ class Diagram {
         } else {
           conflicting = true;
           anchor_box.conflicting_connector = true;
+          other_box.conflicting_connector = true;
         }
       } else {
         conflicting = true;
@@ -396,11 +406,14 @@ class Calendar {
   PVector anchor = null;
   PVector hover = null;
   PVector conflicting_timeslot = null;
+  Region region;
+  Region non_conflicting_region = null;
 
   Calendar(int w_, int h_) {
     w = w_;
     h = h_;
     diagram = new Diagram();
+    region = new Region(new PVector(0, 0), new PVector(w-1, h-1));
   }
 
   void guess_anchor() {
@@ -409,6 +422,7 @@ class Calendar {
 
   void clear_conflict_markers() {
     conflicting_timeslot = null;
+    non_conflicting_region = null;
     diagram.clear_conflict_markers();
   }
 
@@ -416,10 +430,13 @@ class Calendar {
     stroke(128);
     for (int i=0; i<w; ++i) {
       for (int j=0; j<h; ++j) {
-        boolean is_anchor = (anchor != null) && (i == round(anchor.x)) && (j == round(anchor.y));
-        boolean is_hover = (hover != null) && (i == round(hover.x)) && (j == round(hover.y));
-        boolean is_conflicting_timeslot = is_flashing_red() && (conflicting_timeslot != null) && (i == round(conflicting_timeslot.x)) && (j == round(conflicting_timeslot.y));
-        image(is_conflicting_timeslot ? conflicting_timeslot_image : is_anchor ? anchor_image : is_hover ? hover_image : timeslot_image, i*TIMESLOT_WIDTH, j*TIMESLOT_HEIGHT);
+        PVector v = new PVector(i, j);
+        boolean is_anchor = (anchor != null) && are_int_vectors_equal(v, anchor);
+        boolean is_hover = (hover != null) && are_int_vectors_equal(v, hover);
+        boolean is_at_conflicting_timeslot = (conflicting_timeslot != null) && are_int_vectors_equal(v, conflicting_timeslot);
+        boolean is_outside_non_conflicting_region = (non_conflicting_region != null) && !non_conflicting_region.contains_int_vector(v);
+        boolean is_conflicting = is_flashing_red() && (is_at_conflicting_timeslot || is_outside_non_conflicting_region);
+        image(is_conflicting ? conflicting_timeslot_image : is_anchor ? anchor_image : is_hover ? hover_image : timeslot_image, i*TIMESLOT_WIDTH, j*TIMESLOT_HEIGHT);
       }
     }
   }
@@ -463,15 +480,29 @@ void draw() {
 
 void mouseReleased() {
   if (global_mode == INTERACTIVE_MODE && global_target_calendar.hover != null) {
+    boolean conflicting = false;
+
     Box target_anchor_box = global_target_calendar.diagram.boxes.get(global_target_calendar.hover);
     if (target_anchor_box == null) {
+      conflicting = true;
       global_target_calendar.conflicting_timeslot = global_target_calendar.hover;
+    }
+
+    PVector anchor_delta = PVector.sub(global_source_calendar.anchor, global_target_calendar.hover);
+    Region non_conflicting_region = new Region(anchor_delta, PVector.add(anchor_delta, new PVector(global_target_calendar.w-1, global_target_calendar.h-1)));
+    if (!non_conflicting_region.contains_smaller_region(global_source_calendar.region)) {
+      conflicting = true;
+      global_source_calendar.non_conflicting_region = non_conflicting_region;
+    }
+
+    if (conflicting) {
       display_conflicts();
     } else {
       Diagram result = global_target_calendar.diagram.merge(global_target_calendar.hover, global_source_calendar.diagram, global_source_calendar.anchor);
       if (result == null) {
         display_conflicts();
       } else {
+        global_target_calendar.anchor = global_target_calendar.hover;
         global_target_calendar.diagram = result;
       }
     }

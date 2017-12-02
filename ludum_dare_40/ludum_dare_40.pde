@@ -8,6 +8,7 @@ final int CLASS_WIDTH = 60;
 final int CLASS_HEIGHT = 60;
 final int CLASS_DX = (GRID_WIDTH - CLASS_WIDTH) / 2;
 final int CLASS_DY = (GRID_HEIGHT - CLASS_HEIGHT) / 2;
+final int CALENDAR_GAP = 150;
 
 // connector types
 final int NO_CONNECTOR = 0;
@@ -19,7 +20,8 @@ final int WHITE_DIAMOND_CONNECTOR = 3; // aggregation
 // GLOBALS
 
 final NamePool global_name_pool = new NamePool();
-Diagram global_diagram;
+Calendar global_source_calendar;
+Calendar global_target_calendar;
 
 
 void setup() {
@@ -30,16 +32,24 @@ void setup() {
 
 
   Box box;
-  global_diagram = new Diagram();
 
-  for (int ii=0; ii<4; ++ii) {
-    box = new Box(ii);
-    box.connectors.add(new PVector(0, 1));
-    global_diagram.boxes.put(new PVector(ii, 0), box);
 
-    box = new Box(NO_CONNECTOR);
-    global_diagram.boxes.put(new PVector(ii, 1), box);
-  }
+  global_source_calendar = new Calendar(1, 2);
+  box = new Box(BLACK_DIAMOND_CONNECTOR);
+  box.connectors.add(new PVector(0, 1));
+  global_source_calendar.diagram.boxes.put(new PVector(0, 0), box);
+
+  box = new Box(NO_CONNECTOR);
+  global_source_calendar.diagram.boxes.put(new PVector(0, 1), box);
+
+
+  global_target_calendar = new Calendar(3, 4);
+  box = new Box(WHITE_ARROW_CONNECTOR);
+  box.connectors.add(new PVector(0, 1));
+  global_target_calendar.diagram.boxes.put(new PVector(1, 1), box);
+
+  box = new Box(NO_CONNECTOR);
+  global_target_calendar.diagram.boxes.put(new PVector(1, 2), box);
 }
 
 void draw_grid(int w, int h) {
@@ -152,6 +162,23 @@ class Diagram {
   }
 }
 
+class Calendar {
+  int w;
+  int h;
+  Diagram diagram;
+
+  Calendar(int w_, int h_) {
+    w = w_;
+    h = h_;
+    diagram = new Diagram();
+  }
+
+  void draw() {
+    draw_grid(w, h);
+    diagram.draw(0, 0);
+  }
+}
+
 
 void draw() {
   // UPDATE
@@ -159,14 +186,18 @@ void draw() {
 
   // DRAW
 
-  int w = 4;
-  int h = 3;
   background(215);
   pushMatrix();
-  translate((WINDOW_WIDTH-w*GRID_WIDTH)/2, (WINDOW_HEIGHT-h*GRID_HEIGHT)/2); // center
 
-  draw_grid(w, h);
-  global_diagram.draw(0, 0);
+  translate(WINDOW_WIDTH/2, WINDOW_HEIGHT/2); // center
+
+  translate(-(global_source_calendar.w*GRID_WIDTH+CALENDAR_GAP/2), -global_source_calendar.h*GRID_HEIGHT/2); // pushMatrix()
+  global_source_calendar.draw();
+  translate(global_source_calendar.w*GRID_WIDTH+CALENDAR_GAP/2, global_source_calendar.h*GRID_HEIGHT/2); // popMatrix()
+
+  translate(CALENDAR_GAP/2, -global_target_calendar.h*GRID_HEIGHT/2); // pushMatrix()
+  global_target_calendar.draw();
+  translate(-CALENDAR_GAP/2, global_target_calendar.h*GRID_HEIGHT/2); // popMatrix()
 
   popMatrix();
 

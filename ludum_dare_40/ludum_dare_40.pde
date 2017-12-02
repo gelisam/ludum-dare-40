@@ -43,7 +43,7 @@ void setup() {
   box = new Box(NO_CONNECTOR);
   global_source_calendar.diagram.boxes.put(new PVector(0, 1), box);
 
-  global_source_calendar.complete();
+  global_source_calendar.guess_anchor();
 
 
   global_target_calendar = new Calendar(3, 4);
@@ -54,8 +54,6 @@ void setup() {
 
   box = new Box(NO_CONNECTOR);
   global_target_calendar.diagram.boxes.put(new PVector(1, 2), box);
-
-  global_target_calendar.complete();
 }
 
 void draw_grid(int w, int h) {
@@ -159,9 +157,9 @@ class Box {
 
 class Diagram {
   HashMap<PVector, Box> boxes = new HashMap<PVector, Box>();
-  PVector anchor;
+  PVector anchor = null;
 
-  void complete() {
+  void guess_anchor() {
     for (PVector delta : boxes.keySet()) {
       anchor = delta;
       return;
@@ -181,7 +179,9 @@ class Diagram {
       box.draw(i+round(delta.x), j+round(delta.y));
     }
 
-    draw_anchor(round(anchor.x), round(anchor.y));
+    if (anchor != null) {
+      draw_anchor(round(anchor.x), round(anchor.y));
+    }
   }
 }
 
@@ -196,8 +196,8 @@ class Calendar {
     diagram = new Diagram();
   }
 
-  void complete() {
-    diagram.complete();
+  void guess_anchor() {
+    diagram.guess_anchor();
   }
 
   void draw() {

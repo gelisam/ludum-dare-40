@@ -87,7 +87,7 @@ void display_conflicts() {
 }
 
 boolean is_flashing_red() {
-  return global_mode == DISPLAYING_CONFLICTS_MODE && (global_t % 0.2 < 0.1);
+  return (global_t % 0.2 < 0.1);
 }
 
 
@@ -129,12 +129,25 @@ class Box {
   String name;
   int connector_type;
   ArrayList<PVector> connectors = new ArrayList<PVector>();
-  boolean conflicting = true;
-  boolean conflicting_connector = true;
+  boolean conflicting = false;
+  boolean conflicting_connector = false;
 
   Box(int connector_type_) {
     name = global_name_pool.next_name();
     connector_type = connector_type_;
+  }
+
+  Box(Box other) {
+    name = other.name;
+    connector_type = other.connector_type;
+    for (PVector connector : other.connectors) {
+      connectors.add(connector);
+    }
+  }
+
+  void clear_conflict_markers() {
+    conflicting = false;
+    conflicting_connector = false;
   }
 
   void draw_box(int i, int j) {
@@ -224,8 +237,10 @@ class Diagram {
     return null;
   }
 
+  // in case of conflict, conflict markers are added and null is returned.
   Diagram merge(PVector anchor, Diagram other, PVector other_anchor) {
     Diagram result = new Diagram();
+    boolean conflicting = false;
 
     for (PVector delta : boxes.keySet()) {
       Box box = boxes.get(delta);
@@ -236,10 +251,29 @@ class Diagram {
     for (PVector delta : other.boxes.keySet()) {
       Box other_box = other.boxes.get(delta);
       PVector dest = PVector.add(delta, anchor_delta);
-      result.boxes.put(dest, other_box);
+
+      Box existing_box = result.boxes.get(dest);
+      if (existing_box == null) {
+        result.boxes.put(dest, new Box(other_box));
+      } else {
+        conflicting = true;
+        other_box.conflicting = true;
+        existing_box.conflicting = true;
+      }
     }
 
-    return result;
+    if (conflicting) {
+      return null;
+    } else {
+      return result;
+    }
+  }
+
+  void clear_conflict_markers() {
+    for (PVector delta : boxes.keySet()) {
+      Box box = boxes.get(delta);
+      box.clear_conflict_markers();
+    }
   }
 
   void draw_anchor(int i, int j) {
@@ -274,6 +308,10 @@ class Calendar {
     anchor = diagram.guess_anchor();
   }
 
+  void clear_conflict_markers() {
+    diagram.clear_conflict_markers();
+  }
+
   void draw_grid(int w, int h) {
     stroke(128);
     for (int i=0; i<w; ++i) {
@@ -297,6 +335,8 @@ void draw() {
   global_t += 1.0/60; // assumes 60fps
 
   if (global_mode == DISPLAYING_CONFLICTS_MODE && global_t > 0.5) {
+    global_source_calendar.clear_conflict_markers();
+    global_target_calendar.clear_conflict_markers();
     global_mode = INTERACTIVE_MODE;
   }
 
@@ -321,11 +361,12 @@ void draw() {
 }
 
 void mouseReleased() {
-  if (global_mode == INTERACTIVE_MODE) {
-    if (global_target_calendar.hover != null) {
-      global_target_calendar.diagram = global_target_calendar.diagram.merge(global_target_calendar.hover, global_source_calendar.diagram, global_source_calendar.anchor);
-    } else {
+  if (global_mode == INTERACTIVE_MODE && global_target_calendar.hover != null) {
+    Diagram result = global_target_calendar.diagram.merge(global_target_calendar.hover, global_source_calendar.diagram, global_source_calendar.anchor);
+    if (result == null) {
       display_conflicts();
+    } else {
+      global_target_calendar.diagram = result;
     }
   }
 }

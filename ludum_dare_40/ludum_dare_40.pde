@@ -16,8 +16,15 @@ final int WHITE_ARROW_CONNECTOR = 1; // inheritance
 final int BLACK_DIAMOND_CONNECTOR = 2; // composition
 final int WHITE_DIAMOND_CONNECTOR = 3; // aggregation
 
+// interactive modes
+final int INTERACTIVE_MODE = 0;
+final int DISPLAYING_CONFLICTS_MODE = 1;
+
 
 // GLOBALS
+
+int global_mode = 0;
+float global_t = 0.0;
 
 final NamePool global_name_pool = new NamePool();
 Calendar global_source_calendar;
@@ -54,6 +61,11 @@ void setup() {
 
   box = new Box(NO_CONNECTOR);
   global_target_calendar.diagram.boxes.put(new PVector(1, 2), box);
+}
+
+
+boolean is_flashing_red() {
+  return global_mode == DISPLAYING_CONFLICTS_MODE && (global_t % 0.2 < 0.1);
 }
 
 
@@ -95,6 +107,8 @@ class Box {
   String name;
   int connector_type;
   ArrayList<PVector> connectors = new ArrayList<PVector>();
+  boolean conflicting = true;
+  boolean conflicting_connector = true;
 
   Box(int connector_type_) {
     name = global_name_pool.next_name();
@@ -105,13 +119,25 @@ class Box {
     int x = i*GRID_WIDTH+CLASS_DX;
     int y = j*GRID_HEIGHT+CLASS_DY;
 
-    stroke(0);
+    if (conflicting && is_flashing_red()) {
+      stroke(205, 15, 15);
+    } else {
+      stroke(0);
+    }
 
-    fill(255);
+    if (conflicting && is_flashing_red()) {
+      fill(255, 0, 0);
+    } else {
+      fill(255);
+    }
     rect(x, y, CLASS_WIDTH, CLASS_HEIGHT-1);
     line(x, y+20, x+CLASS_WIDTH, y+20);
 
-    fill(0);
+    if (conflicting && is_flashing_red()) {
+      fill(205, 15, 15);
+    } else {
+      fill(0);
+    }
     text(name, x+CLASS_WIDTH/2, y+15);
   }
 
@@ -122,14 +148,34 @@ class Box {
     int y2 = j2*GRID_HEIGHT+CLASS_DY;
 
 
-    stroke(0);
+    if (conflicting_connector && is_flashing_red()) {
+      stroke(205, 15, 15);
+    } else {
+      stroke(0);
+    }
     if (connector_type == NO_CONNECTOR) {
       line(x1, y1, x1, y1+10);
     } else if (connector_type == WHITE_ARROW_CONNECTOR) {
-      fill(255);
+      if (conflicting_connector && is_flashing_red()) {
+        fill(255, 0, 0);
+      } else {
+        fill(255);
+      }
       quad(x1, y1, x1-5, y1+10, x1, y1+10, x1+5, y1+10);
     } else {
-      fill((connector_type == BLACK_DIAMOND_CONNECTOR) ? 0 : 255);
+      if (connector_type == BLACK_DIAMOND_CONNECTOR) {
+        if (conflicting_connector && is_flashing_red()) {
+          fill(205, 15, 15);
+        } else {
+          fill(0);
+        }
+      } else {
+        if (conflicting_connector && is_flashing_red()) {
+          fill(255, 0, 0);
+        } else {
+          fill(255);
+        }
+      }
       quad(x1, y1, x1-5, y1+5, x1, y1+10, x1+5, y1+5);
     }
 
@@ -209,6 +255,11 @@ class Calendar {
 
 void draw() {
   // UPDATE
+  global_t += 1.0/60; // assumes 60fps
+
+  if (global_mode == DISPLAYING_CONFLICTS_MODE && global_t > 0.5) {
+    global_mode = INTERACTIVE_MODE;
+  }
 
 
   // DRAW
@@ -230,4 +281,11 @@ void draw() {
 
 
   // DEBUG
+}
+
+void mouseReleased() {
+  if (global_mode == INTERACTIVE_MODE) {
+    global_mode = DISPLAYING_CONFLICTS_MODE;
+    global_t = 0.0;
+  }
 }

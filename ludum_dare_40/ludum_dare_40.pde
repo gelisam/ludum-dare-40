@@ -17,7 +17,7 @@ void setup() {
 
 void draw_box(String name, int x, int y) {
   fill(255);
-  rect(x*100, y*100, 60, 60);
+  rect(x*100, y*100, 60, 59);
   line(x*100, y*100+20, x*100+60, y*100+20);
 
   fill(0);

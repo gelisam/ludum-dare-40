@@ -1,3 +1,5 @@
+// CONSTANTS
+
 final int WINDOW_WIDTH = 640;
 final int WINDOW_HEIGHT = 640;
 final int GRID_WIDTH = 100;
@@ -14,6 +16,11 @@ final int BLACK_DIAMOND_CONNECTOR = 2; // composition
 final int WHITE_DIAMOND_CONNECTOR = 3; // aggregation
 
 
+// GLOBALS
+
+final NamePool global_name_pool = new NamePool();
+
+
 void setup() {
   size(640, 640);
 
@@ -28,6 +35,40 @@ void draw_grid(int w, int h) {
   }
   for (int j=0; j<=h; ++j) {
     line(0, j*GRID_HEIGHT, w*GRID_WIDTH, j*GRID_HEIGHT);
+  }
+}
+
+
+class NamePool {
+  StringList unused_names = new StringList();
+
+  NamePool() {
+    unused_names.append("Bank");
+    unused_names.append("Account");
+    unused_names.append("User");
+    unused_names.append("Person");
+    unused_names.append("Animal");
+    unused_names.append("Cat");
+    unused_names.append("Dog");
+    unused_names.append("Shape");
+    unused_names.append("Circle");
+    unused_names.append("Ellipse");
+    unused_names.append("Square");
+    unused_names.append("Rectangle");
+    unused_names.append("Widget");
+    unused_names.append("Button");
+    unused_names.append("Label");
+    unused_names.append("Entity");
+    unused_names.append("Component");
+    unused_names.append("Data");
+    unused_names.append("Manager");
+    unused_names.append("Factory");
+    unused_names.append("Tool");
+    unused_names.shuffle();
+  }
+
+  String next_name() {
+    return unused_names.remove(0);
   }
 }
 

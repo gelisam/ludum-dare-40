@@ -2,12 +2,12 @@
 
 final int WINDOW_WIDTH = 1280;
 final int WINDOW_HEIGHT = 800;
-final int GRID_WIDTH = 100;
-final int GRID_HEIGHT = 100;
+final int TIMESLOT_WIDTH = 100;
+final int TIMESLOT_HEIGHT = 100;
 final int CLASS_WIDTH = 60;
 final int CLASS_HEIGHT = 60;
-final int CLASS_DX = (GRID_WIDTH - CLASS_WIDTH) / 2;
-final int CLASS_DY = (GRID_HEIGHT - CLASS_HEIGHT) / 2;
+final int CLASS_DX = (TIMESLOT_WIDTH - CLASS_WIDTH) / 2;
+final int CLASS_DY = (TIMESLOT_HEIGHT - CLASS_HEIGHT) / 2;
 final int CALENDAR_GAP = 150;
 
 // connector types
@@ -31,7 +31,7 @@ Calendar global_source_calendar;
 Calendar global_target_calendar;
 
 PImage background_image;
-PImage grid_image;
+PImage timeslot_image;
 
 
 void setup() {
@@ -41,7 +41,7 @@ void setup() {
   textAlign(CENTER);
 
   background_image = loadImage("background_paper.png");
-  grid_image = loadImage("background_timeslot.png");
+  timeslot_image = loadImage("background_timeslot.png");
 
 
   Box box;
@@ -122,8 +122,8 @@ class Box {
   }
 
   void draw_box(int i, int j) {
-    int x = i*GRID_WIDTH+CLASS_DX;
-    int y = j*GRID_HEIGHT+CLASS_DY;
+    int x = i*TIMESLOT_WIDTH+CLASS_DX;
+    int y = j*TIMESLOT_HEIGHT+CLASS_DY;
 
     if (conflicting && is_flashing_red()) {
       stroke(205, 15, 15);
@@ -148,10 +148,10 @@ class Box {
   }
 
   void draw_connector(int i1, int j1, int i2, int j2) {
-    int x1 = i1*GRID_WIDTH+CLASS_DX+CLASS_WIDTH/2;
-    int y1 = j1*GRID_HEIGHT+CLASS_DY+CLASS_HEIGHT;
-    int x2 = i2*GRID_WIDTH+CLASS_DX+CLASS_WIDTH/2;
-    int y2 = j2*GRID_HEIGHT+CLASS_DY;
+    int x1 = i1*TIMESLOT_WIDTH+CLASS_DX+CLASS_WIDTH/2;
+    int y1 = j1*TIMESLOT_HEIGHT+CLASS_DY+CLASS_HEIGHT;
+    int x2 = i2*TIMESLOT_WIDTH+CLASS_DX+CLASS_WIDTH/2;
+    int y2 = j2*TIMESLOT_HEIGHT+CLASS_DY;
 
 
     if (conflicting_connector && is_flashing_red()) {
@@ -212,7 +212,7 @@ class Diagram {
     float r = 40;
     stroke(255, 0, 0);
     noFill();
-    ellipse(i*GRID_WIDTH+GRID_WIDTH/2, j*GRID_HEIGHT+GRID_HEIGHT/2, 2*r, 2*r);
+    ellipse(i*TIMESLOT_WIDTH+TIMESLOT_WIDTH/2, j*TIMESLOT_HEIGHT+TIMESLOT_HEIGHT/2, 2*r, 2*r);
   }
 
   void draw(int i, int j) {
@@ -246,7 +246,7 @@ class Calendar {
     stroke(128);
     for (int i=0; i<=w; ++i) {
       for (int j=0; j<=h; ++j) {
-        image(grid_image, i*GRID_WIDTH, j*GRID_HEIGHT);
+        image(timeslot_image, i*TIMESLOT_WIDTH, j*TIMESLOT_HEIGHT);
       }
     }
   }
@@ -274,13 +274,13 @@ void draw() {
 
   translate(WINDOW_WIDTH/2, WINDOW_HEIGHT/2); // center
 
-  translate(-(global_source_calendar.w*GRID_WIDTH+CALENDAR_GAP/2), -global_source_calendar.h*GRID_HEIGHT/2); // pushMatrix()
+  translate(-(global_source_calendar.w*TIMESLOT_WIDTH+CALENDAR_GAP/2), -global_source_calendar.h*TIMESLOT_HEIGHT/2); // pushMatrix()
   global_source_calendar.draw();
-  translate(global_source_calendar.w*GRID_WIDTH+CALENDAR_GAP/2, global_source_calendar.h*GRID_HEIGHT/2); // popMatrix()
+  translate(global_source_calendar.w*TIMESLOT_WIDTH+CALENDAR_GAP/2, global_source_calendar.h*TIMESLOT_HEIGHT/2); // popMatrix()
 
-  translate(CALENDAR_GAP/2, -global_target_calendar.h*GRID_HEIGHT/2); // pushMatrix()
+  translate(CALENDAR_GAP/2, -global_target_calendar.h*TIMESLOT_HEIGHT/2); // pushMatrix()
   global_target_calendar.draw();
-  translate(-CALENDAR_GAP/2, global_target_calendar.h*GRID_HEIGHT/2); // popMatrix()
+  translate(-CALENDAR_GAP/2, global_target_calendar.h*TIMESLOT_HEIGHT/2); // popMatrix()
 
   popMatrix();
 

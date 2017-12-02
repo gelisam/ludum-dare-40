@@ -35,6 +35,7 @@ void setup() {
 
 
   global_source_calendar = new Calendar(1, 2);
+
   box = new Box(BLACK_DIAMOND_CONNECTOR);
   box.connectors.add(new PVector(0, 1));
   global_source_calendar.diagram.boxes.put(new PVector(0, 0), box);
@@ -42,14 +43,19 @@ void setup() {
   box = new Box(NO_CONNECTOR);
   global_source_calendar.diagram.boxes.put(new PVector(0, 1), box);
 
+  global_source_calendar.complete();
+
 
   global_target_calendar = new Calendar(3, 4);
+
   box = new Box(WHITE_ARROW_CONNECTOR);
   box.connectors.add(new PVector(0, 1));
   global_target_calendar.diagram.boxes.put(new PVector(1, 1), box);
 
   box = new Box(NO_CONNECTOR);
   global_target_calendar.diagram.boxes.put(new PVector(1, 2), box);
+
+  global_target_calendar.complete();
 }
 
 void draw_grid(int w, int h) {
@@ -153,12 +159,29 @@ class Box {
 
 class Diagram {
   HashMap<PVector, Box> boxes = new HashMap<PVector, Box>();
+  PVector anchor;
+
+  void complete() {
+    for (PVector delta : boxes.keySet()) {
+      anchor = delta;
+      return;
+    }
+  }
+
+  void draw_anchor(int i, int j) {
+    float r = 40;
+    stroke(255, 0, 0);
+    noFill();
+    ellipse(i*GRID_WIDTH+GRID_WIDTH/2, j*GRID_HEIGHT+GRID_HEIGHT/2, 2*r, 2*r);
+  }
 
   void draw(int i, int j) {
     for (PVector delta : boxes.keySet()) {
       Box box = boxes.get(delta);
       box.draw(i+round(delta.x), j+round(delta.y));
     }
+
+    draw_anchor(round(anchor.x), round(anchor.y));
   }
 }
 
@@ -171,6 +194,10 @@ class Calendar {
     w = w_;
     h = h_;
     diagram = new Diagram();
+  }
+
+  void complete() {
+    diagram.complete();
   }
 
   void draw() {

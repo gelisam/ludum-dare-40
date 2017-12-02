@@ -62,6 +62,7 @@ PImage background_image;
 PImage timeslot_image;
 PImage anchor_image;
 PImage hover_image;
+PImage conflicting_timeslot_image;
 
 
 void setup() {
@@ -76,6 +77,7 @@ void setup() {
   timeslot_image = loadImage("background_timeslot.png");
   anchor_image = loadImage("background_timeslot_hilight.png");
   hover_image = loadImage("background_timeslot_hover.png");
+  conflicting_timeslot_image = loadImage("background_timeslot_conflict.png");
 
 
   Box box;
@@ -361,6 +363,7 @@ class Calendar {
   Diagram diagram;
   PVector anchor = null;
   PVector hover = null;
+  PVector conflicting_timeslot = null;
 
   Calendar(int w_, int h_) {
     w = w_;
@@ -373,6 +376,7 @@ class Calendar {
   }
 
   void clear_conflict_markers() {
+    conflicting_timeslot = null;
     diagram.clear_conflict_markers();
   }
 
@@ -382,7 +386,8 @@ class Calendar {
       for (int j=0; j<h; ++j) {
         boolean is_anchor = (anchor != null) && (i == round(anchor.x)) && (j == round(anchor.y));
         boolean is_hover = (hover != null) && (i == round(hover.x)) && (j == round(hover.y));
-        image(is_anchor ? anchor_image : is_hover ? hover_image : timeslot_image, i*TIMESLOT_WIDTH, j*TIMESLOT_HEIGHT);
+        boolean is_conflicting_timeslot = is_flashing_red() && (conflicting_timeslot != null) && (i == round(conflicting_timeslot.x)) && (j == round(conflicting_timeslot.y));
+        image(is_conflicting_timeslot ? conflicting_timeslot_image : is_anchor ? anchor_image : is_hover ? hover_image : timeslot_image, i*TIMESLOT_WIDTH, j*TIMESLOT_HEIGHT);
       }
     }
   }
@@ -426,11 +431,17 @@ void draw() {
 
 void mouseReleased() {
   if (global_mode == INTERACTIVE_MODE && global_target_calendar.hover != null) {
-    Diagram result = global_target_calendar.diagram.merge(global_target_calendar.hover, global_source_calendar.diagram, global_source_calendar.anchor);
-    if (result == null) {
+    Box target_anchor_box = global_target_calendar.diagram.boxes.get(global_target_calendar.hover);
+    if (target_anchor_box == null) {
+      global_target_calendar.conflicting_timeslot = global_target_calendar.hover;
       display_conflicts();
     } else {
-      global_target_calendar.diagram = result;
+      Diagram result = global_target_calendar.diagram.merge(global_target_calendar.hover, global_source_calendar.diagram, global_source_calendar.anchor);
+      if (result == null) {
+        display_conflicts();
+      } else {
+        global_target_calendar.diagram = result;
+      }
     }
   }
 }

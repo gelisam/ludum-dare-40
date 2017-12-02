@@ -33,6 +33,7 @@ Calendar global_target_calendar;
 PFont font;
 PImage background_image;
 PImage timeslot_image;
+PImage anchor_image;
 
 
 void setup() {
@@ -45,6 +46,7 @@ void setup() {
 
   background_image = loadImage("background_paper.png");
   timeslot_image = loadImage("background_timeslot.png");
+  anchor_image = loadImage("background_timeslot_hilight.png");
 
 
   Box box;
@@ -202,13 +204,13 @@ class Box {
 
 class Diagram {
   HashMap<PVector, Box> boxes = new HashMap<PVector, Box>();
-  PVector anchor = null;
 
-  void guess_anchor() {
+  PVector guess_anchor() {
     for (PVector delta : boxes.keySet()) {
-      anchor = delta;
-      return;
+      return delta;
     }
+
+    return null;
   }
 
   void draw_anchor(int i, int j) {
@@ -223,10 +225,6 @@ class Diagram {
       Box box = boxes.get(delta);
       box.draw(i+round(delta.x), j+round(delta.y));
     }
-
-    if (anchor != null) {
-      draw_anchor(round(anchor.x), round(anchor.y));
-    }
   }
 }
 
@@ -234,6 +232,7 @@ class Calendar {
   int w;
   int h;
   Diagram diagram;
+  PVector anchor = null;
 
   Calendar(int w_, int h_) {
     w = w_;
@@ -242,14 +241,15 @@ class Calendar {
   }
 
   void guess_anchor() {
-    diagram.guess_anchor();
+    anchor = diagram.guess_anchor();
   }
 
   void draw_grid(int w, int h) {
     stroke(128);
     for (int i=0; i<w; ++i) {
       for (int j=0; j<h; ++j) {
-        image(timeslot_image, i*TIMESLOT_WIDTH, j*TIMESLOT_HEIGHT);
+        boolean is_anchor = (anchor != null) && (i == round(anchor.x)) && (j == round(anchor.y));
+        image(is_anchor ? anchor_image : timeslot_image, i*TIMESLOT_WIDTH, j*TIMESLOT_HEIGHT);
       }
     }
   }

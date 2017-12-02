@@ -29,11 +29,11 @@ final int BOX_ALPHA = 128;
 final float BOX_CORNER_FUDGE = 1.1f;
 final PVector BOX_CORNER_SCALE = new PVector(BOX_CORNER_FUDGE*CLASS_WIDTH/100.0, BOX_CORNER_FUDGE*CLASS_HEIGHT/100.0);
 // Corners for line intersections, measured from 0-100
-final PVector BOX_CORNER_UL = new PVector( BOX_CORNER_SCALE.x*5,  BOX_CORNER_SCALE.y*3 );
+final PVector BOX_CORNER_UL = new PVector( BOX_CORNER_SCALE.x*5, BOX_CORNER_SCALE.y*3 );
 final PVector BOX_CORNER_UR = new PVector( BOX_CORNER_SCALE.x*97, BOX_CORNER_SCALE.y*3 );
-final PVector BOX_CORNER_ML = new PVector( BOX_CORNER_SCALE.x*4,  BOX_CORNER_SCALE.y*28 );
+final PVector BOX_CORNER_ML = new PVector( BOX_CORNER_SCALE.x*4, BOX_CORNER_SCALE.y*28 );
 final PVector BOX_CORNER_MR = new PVector( BOX_CORNER_SCALE.x*96, BOX_CORNER_SCALE.y*28 );
-final PVector BOX_CORNER_LL = new PVector( BOX_CORNER_SCALE.x*3,  BOX_CORNER_SCALE.y*97 );
+final PVector BOX_CORNER_LL = new PVector( BOX_CORNER_SCALE.x*3, BOX_CORNER_SCALE.y*97 );
 final PVector BOX_CORNER_LR = new PVector( BOX_CORNER_SCALE.x*95, BOX_CORNER_SCALE.y*97 );
 // Corners for horizontal lines, measured from 0-100
 final PVector BOX_CORNER_HUL = new PVector( BOX_CORNER_UL.x-1, BOX_CORNER_UL.y );
@@ -43,10 +43,10 @@ final PVector BOX_CORNER_HMR = new PVector( BOX_CORNER_MR.x-1, BOX_CORNER_MR.y )
 final PVector BOX_CORNER_HLL = new PVector( BOX_CORNER_LL.x-1, BOX_CORNER_LL.y );
 final PVector BOX_CORNER_HLR = new PVector( BOX_CORNER_LR.x-1, BOX_CORNER_LR.y );
 // Corners for vertical lines, measured from 0-100
-final PVector BOX_CORNER_VUL = new PVector( BOX_CORNER_UL.x,   BOX_CORNER_UL.y-1 );
-final PVector BOX_CORNER_VLL = new PVector( BOX_CORNER_LL.x,   BOX_CORNER_LL.y+1 );
-final PVector BOX_CORNER_VUR = new PVector( BOX_CORNER_UR.x,   BOX_CORNER_UR.y-1 );
-final PVector BOX_CORNER_VLR = new PVector( BOX_CORNER_LR.x,   BOX_CORNER_LR.y+1 );
+final PVector BOX_CORNER_VUL = new PVector( BOX_CORNER_UL.x, BOX_CORNER_UL.y-1 );
+final PVector BOX_CORNER_VLL = new PVector( BOX_CORNER_LL.x, BOX_CORNER_LL.y+1 );
+final PVector BOX_CORNER_VUR = new PVector( BOX_CORNER_UR.x, BOX_CORNER_UR.y-1 );
+final PVector BOX_CORNER_VLR = new PVector( BOX_CORNER_LR.x, BOX_CORNER_LR.y+1 );
 
 // GLOBALS
 
@@ -190,9 +190,9 @@ class Box {
     int y = j*TIMESLOT_HEIGHT+CLASS_DY;
 
     stroke(0, BOX_ALPHA);
-    fill(255,255,255, BOX_ALPHA);
-    quad(x+BOX_CORNER_UL.x, y+BOX_CORNER_UL.y,  x+BOX_CORNER_UR.x, y+BOX_CORNER_UR.y, 
-         x+BOX_CORNER_MR.x, y+BOX_CORNER_MR.y,  x+BOX_CORNER_ML.x, y+BOX_CORNER_ML.y);
+    fill(255, 255, 255, BOX_ALPHA);
+    quad(x+BOX_CORNER_UL.x, y+BOX_CORNER_UL.y, x+BOX_CORNER_UR.x, y+BOX_CORNER_UR.y, 
+      x+BOX_CORNER_MR.x, y+BOX_CORNER_MR.y, x+BOX_CORNER_ML.x, y+BOX_CORNER_ML.y);
 
     strokeWeight(1.8);
     strokeCap(ROUND);
@@ -208,7 +208,7 @@ class Box {
     } else {
       fill(255, BOX_ALPHA);
     }
-    
+
     // Horizontal line, upper
     line(x+BOX_CORNER_HUL.x, y+BOX_CORNER_HUL.y, x+BOX_CORNER_HUR.x, y+BOX_CORNER_HUR.y);
     // Horizontal line, mid

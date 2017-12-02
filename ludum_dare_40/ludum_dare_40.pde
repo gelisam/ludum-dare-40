@@ -247,8 +247,8 @@ class Calendar {
 
   void draw_grid(int w, int h) {
     stroke(128);
-    for (int i=0; i<=w; ++i) {
-      for (int j=0; j<=h; ++j) {
+    for (int i=0; i<w; ++i) {
+      for (int j=0; j<h; ++j) {
         image(timeslot_image, i*TIMESLOT_WIDTH, j*TIMESLOT_HEIGHT);
       }
     }

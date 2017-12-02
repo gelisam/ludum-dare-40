@@ -29,11 +29,11 @@ final int BOX_ALPHA = 128;
 final float BOX_CORNER_FUDGE = 1.1f;
 final PVector BOX_CORNER_SCALE = new PVector(BOX_CORNER_FUDGE*CLASS_WIDTH/100.0, BOX_CORNER_FUDGE*CLASS_HEIGHT/100.0);
 // Corners for line intersections, measured from 0-100
-final PVector BOX_CORNER_UL = new PVector( BOX_CORNER_SCALE.x*5,  BOX_CORNER_SCALE.y*3 );
+final PVector BOX_CORNER_UL = new PVector( BOX_CORNER_SCALE.x*5, BOX_CORNER_SCALE.y*3 );
 final PVector BOX_CORNER_UR = new PVector( BOX_CORNER_SCALE.x*97, BOX_CORNER_SCALE.y*3 );
-final PVector BOX_CORNER_ML = new PVector( BOX_CORNER_SCALE.x*4,  BOX_CORNER_SCALE.y*28 );
+final PVector BOX_CORNER_ML = new PVector( BOX_CORNER_SCALE.x*4, BOX_CORNER_SCALE.y*28 );
 final PVector BOX_CORNER_MR = new PVector( BOX_CORNER_SCALE.x*96, BOX_CORNER_SCALE.y*28 );
-final PVector BOX_CORNER_LL = new PVector( BOX_CORNER_SCALE.x*3,  BOX_CORNER_SCALE.y*97 );
+final PVector BOX_CORNER_LL = new PVector( BOX_CORNER_SCALE.x*3, BOX_CORNER_SCALE.y*97 );
 final PVector BOX_CORNER_LR = new PVector( BOX_CORNER_SCALE.x*95, BOX_CORNER_SCALE.y*97 );
 // Corners for horizontal lines, measured from 0-100
 final PVector BOX_CORNER_HUL = new PVector( BOX_CORNER_UL.x-1, BOX_CORNER_UL.y );
@@ -43,10 +43,10 @@ final PVector BOX_CORNER_HMR = new PVector( BOX_CORNER_MR.x-1, BOX_CORNER_MR.y )
 final PVector BOX_CORNER_HLL = new PVector( BOX_CORNER_LL.x-1, BOX_CORNER_LL.y );
 final PVector BOX_CORNER_HLR = new PVector( BOX_CORNER_LR.x-1, BOX_CORNER_LR.y );
 // Corners for vertical lines, measured from 0-100
-final PVector BOX_CORNER_VUL = new PVector( BOX_CORNER_UL.x,   BOX_CORNER_UL.y-1 );
-final PVector BOX_CORNER_VLL = new PVector( BOX_CORNER_LL.x,   BOX_CORNER_LL.y+1 );
-final PVector BOX_CORNER_VUR = new PVector( BOX_CORNER_UR.x,   BOX_CORNER_UR.y-1 );
-final PVector BOX_CORNER_VLR = new PVector( BOX_CORNER_LR.x,   BOX_CORNER_LR.y+1 );
+final PVector BOX_CORNER_VUL = new PVector( BOX_CORNER_UL.x, BOX_CORNER_UL.y-1 );
+final PVector BOX_CORNER_VLL = new PVector( BOX_CORNER_LL.x, BOX_CORNER_LL.y+1 );
+final PVector BOX_CORNER_VUR = new PVector( BOX_CORNER_UR.x, BOX_CORNER_UR.y-1 );
+final PVector BOX_CORNER_VLR = new PVector( BOX_CORNER_LR.x, BOX_CORNER_LR.y+1 );
 
 // GLOBALS
 
@@ -82,9 +82,10 @@ void setup() {
 
   Box box;
 
-
+  // Init source calendar
   global_source_calendar = new Calendar(1, 2);
 
+  // Init source boxes
   box = new Box(BLACK_DIAMOND_CONNECTOR);
   box.connectors.add(new PVector(0, 1));
   global_source_calendar.diagram.boxes.put(new PVector(0, 0), box);
@@ -94,15 +95,19 @@ void setup() {
 
   global_source_calendar.guess_anchor();
 
+  // Init target calendar
+  global_target_calendar = new Calendar(7, 7);
 
-  global_target_calendar = new Calendar(3, 4);
-
+  // Init target boxes
   box = new Box(WHITE_ARROW_CONNECTOR);
   box.connectors.add(new PVector(0, 1));
+  box.connectors.add(new PVector(1, 1));
   global_target_calendar.diagram.boxes.put(new PVector(1, 1), box);
+  println("added target box "+box.name+" with "+box.connectors.size()+" connectors at (1,1)");
 
   box = new Box(NO_CONNECTOR);
   global_target_calendar.diagram.boxes.put(new PVector(1, 2), box);
+  println("added target box "+box.name+" with "+box.connectors.size()+" connectors at (1,2)");
 }
 
 
@@ -190,9 +195,9 @@ class Box {
     int y = j*TIMESLOT_HEIGHT+CLASS_DY;
 
     stroke(0, BOX_ALPHA);
-    fill(255,255,255, BOX_ALPHA);
-    quad(x+BOX_CORNER_UL.x, y+BOX_CORNER_UL.y,  x+BOX_CORNER_UR.x, y+BOX_CORNER_UR.y, 
-         x+BOX_CORNER_MR.x, y+BOX_CORNER_MR.y,  x+BOX_CORNER_ML.x, y+BOX_CORNER_ML.y);
+    fill(255, 255, 255, BOX_ALPHA);
+    quad(x+BOX_CORNER_UL.x, y+BOX_CORNER_UL.y, x+BOX_CORNER_UR.x, y+BOX_CORNER_UR.y, 
+      x+BOX_CORNER_MR.x, y+BOX_CORNER_MR.y, x+BOX_CORNER_ML.x, y+BOX_CORNER_ML.y);
 
     strokeWeight(1.8);
     strokeCap(ROUND);
@@ -208,16 +213,13 @@ class Box {
     } else {
       fill(255, BOX_ALPHA);
     }
-    
-    // Horizontal line, upper
+
+    // Horizontal lines
     line(x+BOX_CORNER_HUL.x, y+BOX_CORNER_HUL.y, x+BOX_CORNER_HUR.x, y+BOX_CORNER_HUR.y);
-    // Horizontal line, mid
     line(x+BOX_CORNER_HML.x, y+BOX_CORNER_HML.y, x+BOX_CORNER_HMR.x, y+BOX_CORNER_HMR.y);
-    // Horizontal line, lower
     line(x+BOX_CORNER_HLL.x, y+BOX_CORNER_HLL.y, x+BOX_CORNER_HLR.x, y+BOX_CORNER_HLR.y);
-    // Vertical line, left
+    // Vertical lines
     line(x+BOX_CORNER_VUL.x, y+BOX_CORNER_VUL.y, x+BOX_CORNER_VLL.x, y+BOX_CORNER_VLL.y);
-    // Vertical line, right
     line(x+BOX_CORNER_VUR.x, y+BOX_CORNER_VUR.y, x+BOX_CORNER_VLR.x, y+BOX_CORNER_VLR.y);
 
     if (conflicting && is_flashing_red()) {
@@ -228,20 +230,37 @@ class Box {
     text(name, x+CLASS_WIDTH/2, y+15);
   }
 
-  void draw_connector(int i1, int j1, int i2, int j2) {
+  void draw_connector_glyph(int i1, int j1) {
     int x1 = i1*TIMESLOT_WIDTH+CLASS_DX+CLASS_WIDTH/2;
     int y1 = j1*TIMESLOT_HEIGHT+CLASS_DY+CLASS_HEIGHT;
-    int x2 = i2*TIMESLOT_WIDTH+CLASS_DX+CLASS_WIDTH/2;
-    int y2 = j2*TIMESLOT_HEIGHT+CLASS_DY;
 
+    // Draw connector leading line and dot
 
+    stroke(0);
+    if( connectors.size()==1 ) {
+      stroke(0,255,0);
+      line(x1, y1+10, x1, y1+30);
+    }
+    if( connectors.size()==2 ) {
+      stroke(0,0,255);
+      line(x1, y1+10, x1, y1+30);
+    }
+    if( connectors.size()>0 ) {
+      line(x1, y1+10, x1, y1+30);
+    }
+    if( connectors.size()>1 ) {
+      ellipse( x1, y1+30, 4, 4 ); 
+    }
+
+    // Draw connector glyph
+    
     if (conflicting_connector && is_flashing_red()) {
       stroke(205, 15, 15);
     } else {
       stroke(0);
     }
     if (connector_type == NO_CONNECTOR) {
-      line(x1, y1, x1, y1+10);
+      //line(x1, y1, x1, y1+10);
     } else if (connector_type == WHITE_ARROW_CONNECTOR) {
       if (conflicting_connector && is_flashing_red()) {
         fill(255, 0, 0);
@@ -263,17 +282,30 @@ class Box {
           fill(255);
         }
       }
-      quad(x1, y1, x1-5, y1+5, x1, y1+10, x1+5, y1+5);
+      quad(x1, y1, x1-5, y1+5, x1, y1+10, x1+5, y1+5);      
     }
+    
+  }
+  
+  void draw_connector_line(int i1, int j1, int i2, int j2) {
+    int x1 = i1*TIMESLOT_WIDTH+CLASS_DX+CLASS_WIDTH/2;
+    int y1 = j1*TIMESLOT_HEIGHT+CLASS_DY+CLASS_HEIGHT;
+    int x2 = i2*TIMESLOT_WIDTH+CLASS_DX+CLASS_WIDTH/2;
+    int y2 = j2*TIMESLOT_HEIGHT+CLASS_DY;
 
-    line(x1, y1+10, x2, y2);
+    // Draw connector lines
+    
+    stroke(0);
+    line(x1, y1+30, x2, y1+30);
+    line(x2, y1+30, x2, y2);
   }
 
   void draw(int i, int j) {
     draw_box(i, j);
 
+    draw_connector_glyph(i, j);
     for (PVector delta : connectors) {
-      draw_connector(i, j, round(i+delta.x), round(j+delta.y));
+      draw_connector_line(i, j, round(i+delta.x), round(j+delta.y));
     }
   }
 }

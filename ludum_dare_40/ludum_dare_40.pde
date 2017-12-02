@@ -299,16 +299,19 @@ void draw() {
 }
 
 void mouseReleased() {
-  display_conflicts();
+  if (global_mode == INTERACTIVE_MODE && global_target_calendar.anchor != null) {
+    display_conflicts();
+  }
 }
 
 void mouseMoved() {
-  if (global_target_calendar.anchor == null) {
-    global_target_calendar.anchor = new PVector();
-  }
-
   float x = mouseX - TARGET_CALENDAR_X;
   float y = mouseY - TARGET_CALENDAR_Y;
-  global_target_calendar.anchor.x = floor(x / TIMESLOT_WIDTH);
-  global_target_calendar.anchor.y = floor(y / TIMESLOT_HEIGHT);
+  int i = floor(x / TIMESLOT_WIDTH);
+  int j = floor(y / TIMESLOT_HEIGHT);
+  if (i >= 0 && i < global_target_calendar.w && j >= 0 && j < global_target_calendar.h) {
+    global_target_calendar.anchor = new PVector(i, j);
+  } else {
+    global_target_calendar.anchor = null;
+  }
 }

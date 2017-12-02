@@ -19,6 +19,7 @@ final int WHITE_DIAMOND_CONNECTOR = 3; // aggregation
 // GLOBALS
 
 final NamePool global_name_pool = new NamePool();
+Diagram global_diagram;
 
 
 void setup() {
@@ -26,6 +27,19 @@ void setup() {
 
   stroke(0);
   textAlign(CENTER);
+
+
+  Box box;
+  global_diagram = new Diagram();
+
+  for (int ii=0; ii<4; ++ii) {
+    box = new Box(ii);
+    box.connectors.add(new PVector(0, 1));
+    global_diagram.boxes.put(new PVector(ii, 0), box);
+
+    box = new Box(NO_CONNECTOR);
+    global_diagram.boxes.put(new PVector(ii, 1), box);
+  }
 }
 
 void draw_grid(int w, int h) {
@@ -73,40 +87,71 @@ class NamePool {
 }
 
 
-void draw_box(String name, int i, int j) {
-  int x = i*GRID_WIDTH+CLASS_DX;
-  int y = j*GRID_HEIGHT+CLASS_DY;
+class Box {
+  String name;
+  int connector_type;
+  ArrayList<PVector> connectors = new ArrayList<PVector>();
 
-  stroke(0);
-
-  fill(255);
-  rect(x, y, CLASS_WIDTH, CLASS_HEIGHT-1);
-  line(x, y+20, x+CLASS_WIDTH, y+20);
-
-  fill(0);
-  text(name, x+CLASS_WIDTH/2, y+15);
-}
-
-void draw_connector(int connector_type, int i1, int j1, int i2, int j2) {
-  int x1 = i1*GRID_WIDTH+CLASS_DX+CLASS_WIDTH/2;
-  int y1 = j1*GRID_HEIGHT+CLASS_DY+CLASS_HEIGHT;
-  int x2 = i2*GRID_WIDTH+CLASS_DX+CLASS_WIDTH/2;
-  int y2 = j2*GRID_HEIGHT+CLASS_DY;
-
-
-  stroke(0);
-  if (connector_type == NO_CONNECTOR) {
-    line(x1, y1, x1, y1+10);
-  } else if (connector_type == WHITE_ARROW_CONNECTOR) {
-    fill(255);
-    quad(x1, y1, x1-5, y1+10, x1, y1+10, x1+5, y1+10);
-  } else {
-    fill((connector_type == BLACK_DIAMOND_CONNECTOR) ? 0 : 255);
-    quad(x1, y1, x1-5, y1+5, x1, y1+10, x1+5, y1+5);
+  Box(int connector_type_) {
+    name = global_name_pool.next_name();
+    connector_type = connector_type_;
   }
 
-  line(x1, y1+10, x2, y2);
+  void draw_box(int i, int j) {
+    int x = i*GRID_WIDTH+CLASS_DX;
+    int y = j*GRID_HEIGHT+CLASS_DY;
+
+    stroke(0);
+
+    fill(255);
+    rect(x, y, CLASS_WIDTH, CLASS_HEIGHT-1);
+    line(x, y+20, x+CLASS_WIDTH, y+20);
+
+    fill(0);
+    text(name, x+CLASS_WIDTH/2, y+15);
+  }
+
+  void draw_connector(int i1, int j1, int i2, int j2) {
+    int x1 = i1*GRID_WIDTH+CLASS_DX+CLASS_WIDTH/2;
+    int y1 = j1*GRID_HEIGHT+CLASS_DY+CLASS_HEIGHT;
+    int x2 = i2*GRID_WIDTH+CLASS_DX+CLASS_WIDTH/2;
+    int y2 = j2*GRID_HEIGHT+CLASS_DY;
+
+
+    stroke(0);
+    if (connector_type == NO_CONNECTOR) {
+      line(x1, y1, x1, y1+10);
+    } else if (connector_type == WHITE_ARROW_CONNECTOR) {
+      fill(255);
+      quad(x1, y1, x1-5, y1+10, x1, y1+10, x1+5, y1+10);
+    } else {
+      fill((connector_type == BLACK_DIAMOND_CONNECTOR) ? 0 : 255);
+      quad(x1, y1, x1-5, y1+5, x1, y1+10, x1+5, y1+5);
+    }
+
+    line(x1, y1+10, x2, y2);
+  }
+
+  void draw(int i, int j) {
+    draw_box(i, j);
+
+    for (PVector delta : connectors) {
+      draw_connector(i, j, round(i+delta.x), round(j+delta.y));
+    }
+  }
 }
+
+class Diagram {
+  HashMap<PVector, Box> boxes = new HashMap<PVector, Box>();
+
+  void draw(int i, int j) {
+    for (PVector delta : boxes.keySet()) {
+      Box box = boxes.get(delta);
+      box.draw(i+round(delta.x), j+round(delta.y));
+    }
+  }
+}
+
 
 void draw() {
   // UPDATE
@@ -121,22 +166,7 @@ void draw() {
   translate((WINDOW_WIDTH-w*GRID_WIDTH)/2, (WINDOW_HEIGHT-h*GRID_HEIGHT)/2); // center
 
   draw_grid(w, h);
-
-  draw_box("Widget", 0, 0);
-  draw_box("Person", 0, 1);
-  draw_connector(NO_CONNECTOR, 0, 0, 0, 1);
-
-  draw_box("Bank", 1, 0);
-  draw_box("Account", 1, 1);
-  draw_connector(WHITE_ARROW_CONNECTOR, 1, 0, 1, 1);
-
-  draw_box("Circle", 2, 0);
-  draw_box("Rectangle", 2, 1);
-  draw_connector(BLACK_DIAMOND_CONNECTOR, 2, 0, 2, 1);
-
-  draw_box("Shape", 3, 0);
-  draw_box("Entity", 3, 1);
-  draw_connector(WHITE_DIAMOND_CONNECTOR, 3, 0, 3, 1);
+  global_diagram.draw(0, 0);
 
   popMatrix();
 

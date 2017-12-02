@@ -187,6 +187,7 @@ class Box {
     int x = i*TIMESLOT_WIDTH+CLASS_DX;
     int y = j*TIMESLOT_HEIGHT+CLASS_DY;
 
+    stroke(0, BOX_ALPHA);
     fill(255,255,255, BOX_ALPHA);
     quad(x+BOX_CORNER_UL.x, y+BOX_CORNER_UL.y,  x+BOX_CORNER_UR.x, y+BOX_CORNER_UR.y, 
          x+BOX_CORNER_MR.x, y+BOX_CORNER_MR.y,  x+BOX_CORNER_ML.x, y+BOX_CORNER_ML.y);
@@ -197,7 +198,7 @@ class Box {
     if (conflicting && is_flashing_red()) {
       stroke(205, 15, 15, BOX_ALPHA);
     } else {
-      stroke(0);
+      stroke(0, BOX_ALPHA);
     }
 
     if (conflicting && is_flashing_red()) {

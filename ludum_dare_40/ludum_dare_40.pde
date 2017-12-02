@@ -1,7 +1,7 @@
 // CONSTANTS
 
-final int WINDOW_WIDTH = 640;
-final int WINDOW_HEIGHT = 640;
+final int WINDOW_WIDTH = 1280;
+final int WINDOW_HEIGHT = 800;
 final int GRID_WIDTH = 100;
 final int GRID_HEIGHT = 100;
 final int CLASS_WIDTH = 60;
@@ -22,7 +22,7 @@ final NamePool global_name_pool = new NamePool();
 
 
 void setup() {
-  size(640, 640);
+  size(1280, 800);
 
   stroke(0);
   textAlign(CENTER);

@@ -1,5 +1,9 @@
 final int WINDOW_WIDTH = 640;
 final int WINDOW_HEIGHT = 640;
+final int GRID_WIDTH = 100;
+final int GRID_HEIGHT = 100;
+final int CLASS_WIDTH = 60;
+final int CLASS_HEIGHT = 60;
 
 // connector types
 final int NO_CONNECTOR = 0;
@@ -18,35 +22,36 @@ void setup() {
 void draw_grid(int w, int h) {
   stroke(128);
   for (int x=0; x<=w; ++x) {
-    line(x*100, 0, x*100, h*100);
+    line(x*GRID_WIDTH, 0, x*GRID_WIDTH, h*GRID_HEIGHT);
   }
   for (int y=0; y<=h; ++y) {
-    line(0, y*100, w*100, y*100);
+    line(0, y*GRID_HEIGHT, w*GRID_WIDTH, y*GRID_HEIGHT);
   }
 }
 
 
 void draw_box(String name, int x, int y) {
   fill(255);
-  rect(x*100, y*100, 60, 59);
-  line(x*100, y*100+20, x*100+60, y*100+20);
+  rect(x*GRID_WIDTH, y*GRID_HEIGHT, CLASS_WIDTH, CLASS_HEIGHT-1);
+  line(x*GRID_WIDTH, y*GRID_HEIGHT+20, x*GRID_WIDTH+CLASS_WIDTH, y*GRID_HEIGHT+20);
 
   fill(0);
-  text(name, x*100+30, y*100+15);
+  text(name, x*GRID_WIDTH+30, y*GRID_HEIGHT+15);
 }
 
 void draw_connector(int connector_type, int x1, int y1, int x2, int y2) {
+  stroke(0);
   if (connector_type == NO_CONNECTOR) {
-    line(x1*100+30, y1*100+60, x1*100+30, x1*100+70);
+    line(x1*GRID_WIDTH+CLASS_WIDTH/2, y1*GRID_HEIGHT+CLASS_HEIGHT, x1*GRID_WIDTH+CLASS_WIDTH/2, y1*GRID_HEIGHT+CLASS_HEIGHT+10);
   } else if (connector_type == WHITE_ARROW_CONNECTOR) {
     fill(255);
-    quad(x1*100+30, y1*100+60, x1*100+25, y1*100+70, x1*100+30, y1*100+70, x1*100+35, y1*100+70);
+    quad(x1*GRID_WIDTH+CLASS_WIDTH/2, y1*GRID_HEIGHT+CLASS_HEIGHT, x1*GRID_WIDTH+CLASS_WIDTH/2-5, y1*GRID_HEIGHT+70, x1*GRID_WIDTH+CLASS_WIDTH/2, y1*GRID_HEIGHT+CLASS_HEIGHT+10, x1*GRID_WIDTH+CLASS_WIDTH/2+5, y1*GRID_HEIGHT+CLASS_HEIGHT+10);
   } else {
     fill((connector_type == BLACK_DIAMOND_CONNECTOR) ? 0 : 255);
-    quad(x1*100+30, y1*100+60, x1*100+25, y1*100+65, x1*100+30, y1*100+70, x1*100+35, y1*100+65);
+    quad(x1*GRID_WIDTH+CLASS_WIDTH/2, y1*GRID_HEIGHT+CLASS_HEIGHT, x1*GRID_WIDTH+CLASS_WIDTH/2-5, y1*GRID_HEIGHT+CLASS_HEIGHT+5, x1*GRID_WIDTH+CLASS_WIDTH/2, y1*GRID_HEIGHT+CLASS_HEIGHT+10, x1*GRID_WIDTH+CLASS_WIDTH/2+5, y1*GRID_HEIGHT+CLASS_HEIGHT+5);
   }
 
-  line(x1*100+30, y1*100+70, x2*100+30, y2*100);
+  line(x1*GRID_WIDTH+CLASS_WIDTH/2, y1*GRID_HEIGHT+CLASS_HEIGHT+10, x2*GRID_WIDTH+CLASS_WIDTH/2, y2*GRID_HEIGHT);
 }
 
 void draw() {
@@ -59,7 +64,7 @@ void draw() {
   int h = 3;
   background(215);
   pushMatrix();
-  translate((WINDOW_WIDTH-w*100)/2, (WINDOW_HEIGHT-h*100)/2); // center
+  translate((WINDOW_WIDTH-w*GRID_WIDTH)/2, (WINDOW_HEIGHT-h*GRID_HEIGHT)/2); // center
 
   draw_grid(w, h);
 

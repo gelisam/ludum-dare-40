@@ -20,6 +20,29 @@ final int WHITE_DIAMOND_CONNECTOR = 3; // aggregation
 final int INTERACTIVE_MODE = 0;
 final int DISPLAYING_CONFLICTS_MODE = 1;
 
+final int BOX_ALPHA = 128;
+
+final float BOX_CORNER_FUDGE = 1.1f;
+final PVector BOX_CORNER_SCALE = new PVector(BOX_CORNER_FUDGE*CLASS_WIDTH/100.0, BOX_CORNER_FUDGE*CLASS_HEIGHT/100.0);
+// Corners for line intersections, measured from 0-100
+final PVector BOX_CORNER_UL = new PVector( BOX_CORNER_SCALE.x*5,  BOX_CORNER_SCALE.y*3 );
+final PVector BOX_CORNER_UR = new PVector( BOX_CORNER_SCALE.x*97, BOX_CORNER_SCALE.y*3 );
+final PVector BOX_CORNER_ML = new PVector( BOX_CORNER_SCALE.x*4,  BOX_CORNER_SCALE.y*28 );
+final PVector BOX_CORNER_MR = new PVector( BOX_CORNER_SCALE.x*96, BOX_CORNER_SCALE.y*28 );
+final PVector BOX_CORNER_LL = new PVector( BOX_CORNER_SCALE.x*3,  BOX_CORNER_SCALE.y*97 );
+final PVector BOX_CORNER_LR = new PVector( BOX_CORNER_SCALE.x*95, BOX_CORNER_SCALE.y*97 );
+// Corners for horizontal lines, measured from 0-100
+final PVector BOX_CORNER_HUL = new PVector( BOX_CORNER_UL.x-1, BOX_CORNER_UL.y );
+final PVector BOX_CORNER_HUR = new PVector( BOX_CORNER_UR.x+1, BOX_CORNER_UL.y );
+final PVector BOX_CORNER_HML = new PVector( BOX_CORNER_ML.x-1, BOX_CORNER_ML.y );
+final PVector BOX_CORNER_HMR = new PVector( BOX_CORNER_MR.x-1, BOX_CORNER_MR.y );
+final PVector BOX_CORNER_HLL = new PVector( BOX_CORNER_LL.x-1, BOX_CORNER_LL.y );
+final PVector BOX_CORNER_HLR = new PVector( BOX_CORNER_LR.x-1, BOX_CORNER_LR.y );
+// Corners for vertical lines, measured from 0-100
+final PVector BOX_CORNER_VUL = new PVector( BOX_CORNER_UL.x,   BOX_CORNER_UL.y-1 );
+final PVector BOX_CORNER_VLL = new PVector( BOX_CORNER_LL.x,   BOX_CORNER_LL.y+1 );
+final PVector BOX_CORNER_VUR = new PVector( BOX_CORNER_UR.x,   BOX_CORNER_UR.y-1 );
+final PVector BOX_CORNER_VLR = new PVector( BOX_CORNER_LR.x,   BOX_CORNER_LR.y+1 );
 
 // GLOBALS
 
@@ -125,19 +148,35 @@ class Box {
     int x = i*TIMESLOT_WIDTH+CLASS_DX;
     int y = j*TIMESLOT_HEIGHT+CLASS_DY;
 
+    fill(255,255,255, BOX_ALPHA);
+    quad(x+BOX_CORNER_UL.x, y+BOX_CORNER_UL.y,  x+BOX_CORNER_UR.x, y+BOX_CORNER_UR.y, 
+         x+BOX_CORNER_MR.x, y+BOX_CORNER_MR.y,  x+BOX_CORNER_ML.x, y+BOX_CORNER_ML.y);
+
+    strokeWeight(1.8);
+    strokeCap(ROUND);
+
     if (conflicting && is_flashing_red()) {
-      stroke(205, 15, 15);
+      stroke(205, 15, 15, BOX_ALPHA);
     } else {
       stroke(0);
     }
 
     if (conflicting && is_flashing_red()) {
-      fill(255, 0, 0);
+      fill(255, 0, 0, BOX_ALPHA);
     } else {
-      fill(255);
+      fill(255, BOX_ALPHA);
     }
-    rect(x, y, CLASS_WIDTH, CLASS_HEIGHT-1);
-    line(x, y+20, x+CLASS_WIDTH, y+20);
+    
+    // Horizontal line, upper
+    line(x+BOX_CORNER_HUL.x, y+BOX_CORNER_HUL.y, x+BOX_CORNER_HUR.x, y+BOX_CORNER_HUR.y);
+    // Horizontal line, mid
+    line(x+BOX_CORNER_HML.x, y+BOX_CORNER_HML.y, x+BOX_CORNER_HMR.x, y+BOX_CORNER_HMR.y);
+    // Horizontal line, lower
+    line(x+BOX_CORNER_HLL.x, y+BOX_CORNER_HLL.y, x+BOX_CORNER_HLR.x, y+BOX_CORNER_HLR.y);
+    // Vertical line, left
+    line(x+BOX_CORNER_VUL.x, y+BOX_CORNER_VUL.y, x+BOX_CORNER_VLL.x, y+BOX_CORNER_VLL.y);
+    // Vertical line, right
+    line(x+BOX_CORNER_VUR.x, y+BOX_CORNER_VUR.y, x+BOX_CORNER_VLR.x, y+BOX_CORNER_VLR.y);
 
     if (conflicting && is_flashing_red()) {
       fill(205, 15, 15);

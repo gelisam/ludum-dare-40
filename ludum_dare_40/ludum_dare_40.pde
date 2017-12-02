@@ -30,12 +30,16 @@ final NamePool global_name_pool = new NamePool();
 Calendar global_source_calendar;
 Calendar global_target_calendar;
 
+PImage background_image;
+
 
 void setup() {
   size(1280, 800);
 
   stroke(0);
   textAlign(CENTER);
+
+  background_image = loadImage("background_paper.png");
 
 
   Box box;
@@ -264,7 +268,7 @@ void draw() {
 
   // DRAW
 
-  background(215);
+  image(background_image, 0, 0);
   pushMatrix();
 
   translate(WINDOW_WIDTH/2, WINDOW_HEIGHT/2); // center

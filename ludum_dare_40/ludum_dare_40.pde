@@ -9,6 +9,10 @@ final int CLASS_HEIGHT = 60;
 final int CLASS_DX = (TIMESLOT_WIDTH - CLASS_WIDTH) / 2;
 final int CLASS_DY = (TIMESLOT_HEIGHT - CLASS_HEIGHT) / 2;
 final int CALENDAR_GAP = 150;
+final int SOURCE_CALENDAR_X = 65;
+final int SOURCE_CALENDAR_Y = 45;
+final int TARGET_CALENDAR_X = 502;
+final int TARGET_CALENDAR_Y = 45;
 
 // connector types
 final int NO_CONNECTOR = 0;
@@ -280,15 +284,13 @@ void draw() {
   image(background_image, 0, 0);
   pushMatrix();
 
-  translate(WINDOW_WIDTH/2, WINDOW_HEIGHT/2); // center
-
-  translate(-(global_source_calendar.w*TIMESLOT_WIDTH+CALENDAR_GAP/2), -global_source_calendar.h*TIMESLOT_HEIGHT/2); // pushMatrix()
+  translate(SOURCE_CALENDAR_X, SOURCE_CALENDAR_Y); // pushMatrix()
   global_source_calendar.draw();
-  translate(global_source_calendar.w*TIMESLOT_WIDTH+CALENDAR_GAP/2, global_source_calendar.h*TIMESLOT_HEIGHT/2); // popMatrix()
+  translate(-SOURCE_CALENDAR_X, -SOURCE_CALENDAR_Y); // popMatrix()
 
-  translate(CALENDAR_GAP/2, -global_target_calendar.h*TIMESLOT_HEIGHT/2); // pushMatrix()
+  translate(TARGET_CALENDAR_X, TARGET_CALENDAR_Y); // pushMatrix()
   global_target_calendar.draw();
-  translate(-CALENDAR_GAP/2, global_target_calendar.h*TIMESLOT_HEIGHT/2); // popMatrix()
+  translate(-TARGET_CALENDAR_X, -TARGET_CALENDAR_Y); // popMatrix()
 
   popMatrix();
 

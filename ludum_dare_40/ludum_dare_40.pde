@@ -301,3 +301,14 @@ void draw() {
 void mouseReleased() {
   display_conflicts();
 }
+
+void mouseMoved() {
+  if (global_target_calendar.anchor == null) {
+    global_target_calendar.anchor = new PVector();
+  }
+
+  float x = mouseX - TARGET_CALENDAR_X;
+  float y = mouseY - TARGET_CALENDAR_Y;
+  global_target_calendar.anchor.x = floor(x / TIMESLOT_WIDTH);
+  global_target_calendar.anchor.y = floor(y / TIMESLOT_HEIGHT);
+}

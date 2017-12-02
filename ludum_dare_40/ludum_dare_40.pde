@@ -38,6 +38,7 @@ PFont font;
 PImage background_image;
 PImage timeslot_image;
 PImage anchor_image;
+PImage hover_image;
 
 
 void setup() {
@@ -51,6 +52,7 @@ void setup() {
   background_image = loadImage("background_paper.png");
   timeslot_image = loadImage("background_timeslot.png");
   anchor_image = loadImage("background_timeslot_hilight.png");
+  hover_image = loadImage("background_timeslot_hover.png");
 
 
   Box box;
@@ -260,6 +262,7 @@ class Calendar {
   int h;
   Diagram diagram;
   PVector anchor = null;
+  PVector hover = null;
 
   Calendar(int w_, int h_) {
     w = w_;
@@ -276,7 +279,8 @@ class Calendar {
     for (int i=0; i<w; ++i) {
       for (int j=0; j<h; ++j) {
         boolean is_anchor = (anchor != null) && (i == round(anchor.x)) && (j == round(anchor.y));
-        image(is_anchor ? anchor_image : timeslot_image, i*TIMESLOT_WIDTH, j*TIMESLOT_HEIGHT);
+        boolean is_hover = (hover != null) && (i == round(hover.x)) && (j == round(hover.y));
+        image(is_anchor ? anchor_image : is_hover ? hover_image : timeslot_image, i*TIMESLOT_WIDTH, j*TIMESLOT_HEIGHT);
       }
     }
   }
@@ -318,8 +322,8 @@ void draw() {
 
 void mouseReleased() {
   if (global_mode == INTERACTIVE_MODE) {
-    if (global_target_calendar.anchor != null) {
-      global_target_calendar.diagram = global_target_calendar.diagram.merge(global_target_calendar.anchor, global_source_calendar.diagram, global_source_calendar.anchor);
+    if (global_target_calendar.hover != null) {
+      global_target_calendar.diagram = global_target_calendar.diagram.merge(global_target_calendar.hover, global_source_calendar.diagram, global_source_calendar.anchor);
     } else {
       display_conflicts();
     }
@@ -332,8 +336,8 @@ void mouseMoved() {
   int i = floor(x / TIMESLOT_WIDTH);
   int j = floor(y / TIMESLOT_HEIGHT);
   if (i >= 0 && i < global_target_calendar.w && j >= 0 && j < global_target_calendar.h) {
-    global_target_calendar.anchor = new PVector(i, j);
+    global_target_calendar.hover = new PVector(i, j);
   } else {
-    global_target_calendar.anchor = null;
+    global_target_calendar.hover = null;
   }
 }

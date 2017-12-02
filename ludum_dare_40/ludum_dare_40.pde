@@ -479,44 +479,72 @@ void draw() {
 }
 
 void mouseReleased() {
-  if (global_mode == INTERACTIVE_MODE && global_target_calendar.hover != null) {
-    boolean conflicting = false;
+  if (global_mode == INTERACTIVE_MODE) {
+    if (mouseX < TARGET_CALENDAR_X) {
+      // click on source calendar?
 
-    Box target_anchor_box = global_target_calendar.diagram.boxes.get(global_target_calendar.hover);
-    if (target_anchor_box == null) {
-      conflicting = true;
-      global_target_calendar.conflicting_timeslot = global_target_calendar.hover;
-    }
-
-    PVector anchor_delta = PVector.sub(global_source_calendar.anchor, global_target_calendar.hover);
-    Region non_conflicting_region = new Region(anchor_delta, PVector.add(anchor_delta, new PVector(global_target_calendar.w-1, global_target_calendar.h-1)));
-    if (!non_conflicting_region.contains_smaller_region(global_source_calendar.region)) {
-      conflicting = true;
-      global_source_calendar.non_conflicting_region = non_conflicting_region;
-    }
-
-    if (conflicting) {
-      display_conflicts();
+      if (global_source_calendar.hover != null) {
+        global_source_calendar.anchor = global_source_calendar.hover;
+      }
     } else {
-      Diagram result = global_target_calendar.diagram.merge(global_target_calendar.hover, global_source_calendar.diagram, global_source_calendar.anchor);
-      if (result == null) {
-        display_conflicts();
-      } else {
-        global_target_calendar.anchor = global_target_calendar.hover;
-        global_target_calendar.diagram = result;
+      // click on target calendar?
+
+      if (global_target_calendar.hover != null) {
+        boolean conflicting = false;
+
+        Box target_anchor_box = global_target_calendar.diagram.boxes.get(global_target_calendar.hover);
+        if (target_anchor_box == null) {
+          conflicting = true;
+          global_target_calendar.conflicting_timeslot = global_target_calendar.hover;
+        }
+
+        PVector anchor_delta = PVector.sub(global_source_calendar.anchor, global_target_calendar.hover);
+        Region non_conflicting_region = new Region(anchor_delta, PVector.add(anchor_delta, new PVector(global_target_calendar.w-1, global_target_calendar.h-1)));
+        if (!non_conflicting_region.contains_smaller_region(global_source_calendar.region)) {
+          conflicting = true;
+          global_source_calendar.non_conflicting_region = non_conflicting_region;
+        }
+
+        if (conflicting) {
+          display_conflicts();
+        } else {
+          Diagram result = global_target_calendar.diagram.merge(global_target_calendar.hover, global_source_calendar.diagram, global_source_calendar.anchor);
+          if (result == null) {
+            display_conflicts();
+          } else {
+            global_target_calendar.anchor = global_target_calendar.hover;
+            global_target_calendar.diagram = result;
+          }
+        }
       }
     }
   }
 }
 
 void mouseMoved() {
-  float x = mouseX - TARGET_CALENDAR_X;
-  float y = mouseY - TARGET_CALENDAR_Y;
-  int i = floor(x / TIMESLOT_WIDTH);
-  int j = floor(y / TIMESLOT_HEIGHT);
-  if (i >= 0 && i < global_target_calendar.w && j >= 0 && j < global_target_calendar.h) {
-    global_target_calendar.hover = new PVector(i, j);
+  if (mouseX < TARGET_CALENDAR_X) {
+    // hover over source calendar?
+
+    float x = mouseX - SOURCE_CALENDAR_X;
+    float y = mouseY - SOURCE_CALENDAR_Y;
+    int i = floor(x / TIMESLOT_WIDTH);
+    int j = floor(y / TIMESLOT_HEIGHT);
+    if (i >= 0 && i < global_source_calendar.w && j >= 0 && j < global_source_calendar.h) {
+      global_source_calendar.hover = new PVector(i, j);
+    } else {
+      global_source_calendar.hover = null;
+    }
   } else {
-    global_target_calendar.hover = null;
+    // hover over target calendar?
+
+    float x = mouseX - TARGET_CALENDAR_X;
+    float y = mouseY - TARGET_CALENDAR_Y;
+    int i = floor(x / TIMESLOT_WIDTH);
+    int j = floor(y / TIMESLOT_HEIGHT);
+    if (i >= 0 && i < global_target_calendar.w && j >= 0 && j < global_target_calendar.h) {
+      global_target_calendar.hover = new PVector(i, j);
+    } else {
+      global_target_calendar.hover = null;
+    }
   }
 }

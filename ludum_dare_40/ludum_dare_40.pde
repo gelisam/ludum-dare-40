@@ -81,6 +81,16 @@ void setup() {
 }
 
 
+boolean are_int_vectors_equal(PVector u, PVector v) {
+  return (floor(u.x) == floor(v.x)) && (floor(u.y) == floor(v.y));
+}
+
+boolean are_connector_types_compatible(int connector_type1, int connector_type2) {
+  return (connector_type1 == NO_CONNECTOR) || (connector_type2 == NO_CONNECTOR) || (connector_type1 == connector_type2);
+}
+
+
+
 void display_conflicts() {
   global_mode = DISPLAYING_CONFLICTS_MODE;
   global_t = 0.0;
@@ -242,9 +252,11 @@ class Diagram {
     Diagram result = new Diagram();
     boolean conflicting = false;
 
+    Box anchor_box = boxes.get(anchor);
+
     for (PVector delta : boxes.keySet()) {
       Box box = boxes.get(delta);
-      result.boxes.put(delta, box);
+      result.boxes.put(delta, new Box(box));
     }
 
     PVector anchor_delta = PVector.sub(anchor, other_anchor);
@@ -252,9 +264,21 @@ class Diagram {
       Box other_box = other.boxes.get(delta);
       PVector dest = PVector.add(delta, anchor_delta);
 
-      Box existing_box = result.boxes.get(dest);
+      Box existing_box = boxes.get(dest);
       if (existing_box == null) {
         result.boxes.put(dest, new Box(other_box));
+      } else if (are_int_vectors_equal(dest, anchor)) {
+        // anchor point, both boxes are supposed to match
+        if (are_connector_types_compatible(existing_box.connector_type, other_box.connector_type)) {
+          Box result_box = result.boxes.get(dest);
+          result_box.connector_type = existing_box.connector_type | other_box.connector_type;
+          for (PVector other_connector : other_box.connectors) {
+            result_box.connectors.add(other_connector);
+          }
+        } else {
+          conflicting = true;
+          anchor_box.conflicting_connector = true;
+        }
       } else {
         conflicting = true;
         other_box.conflicting = true;

@@ -1,3 +1,3 @@
-# Ludum Dare 40
+# Crunch Time
 
 Our entry for Ludum Dare 40.

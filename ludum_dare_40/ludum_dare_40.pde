@@ -77,6 +77,8 @@ ArrayList<Diagram> global_completed_diagrams;
 Diagram global_completed_diagram;
 Diagram global_source_diagram;
 Diagram global_target_diagram;
+Diagram global_next_source_diagram;
+Diagram global_next_target_diagram;
 
 Slide global_slide;
 
@@ -427,10 +429,10 @@ void loadScenario(int scenario) {
   Diagram completed_diagram = loadRound(scenario, 0, true).shrink();
   global_completed_diagrams.add(completed_diagram);
 
-  global_source_diagram = completed_diagram;
-  global_source_diagram.guess_anchor();
+  global_next_source_diagram = completed_diagram;
+  global_next_source_diagram.guess_anchor();
 
-  global_target_diagram = loadRound(scenario, 1, true);
+  global_next_target_diagram = loadRound(scenario, 1, true);
 }
 
 void setup() {
@@ -461,6 +463,8 @@ void setup() {
   global_slide.bullet_points.append("• Third point");
 
   loadScenario(1);
+  global_source_diagram = global_next_source_diagram;
+  global_target_diagram = global_next_target_diagram;
 }
 
 
@@ -491,12 +495,12 @@ void refactor() {
   if (can_refactor()) {
     --current_round;
 
-    global_source_diagram = global_completed_diagrams.remove(global_completed_diagrams.size() - 1);
-    global_source_diagram.guess_anchor();
+    global_next_source_diagram = global_completed_diagrams.remove(global_completed_diagrams.size() - 1);
+    global_next_source_diagram.guess_anchor();
 
-    global_target_diagram = loadRound(current_scenario, current_round, true);
+    global_next_target_diagram = loadRound(current_scenario, current_round, true);
 
-    global_mode = INTERACTIVE_MODE;
+    show_next_horizontal_slide();
   }
 }
 
@@ -518,15 +522,15 @@ void commit() {
 
     global_completed_diagrams.add(global_completed_diagram);
 
-    global_source_diagram = global_target_diagram.simplify();
-    global_source_diagram.guess_anchor();
+    global_next_source_diagram = global_target_diagram.simplify();
+    global_next_source_diagram.guess_anchor();
 
     Diagram next_diagram = loadRound(current_scenario, current_round, true);
     if (next_diagram == null) {
       loadScenario(is_last_scenario() ? 1 : (current_scenario+1));
       show_next_horizontal_slide();
     } else {
-      global_target_diagram = next_diagram;
+      global_next_target_diagram = next_diagram;
       show_next_vertical_slide();
     }
   }
@@ -1061,8 +1065,12 @@ void draw() {
     global_target_diagram.clear_conflict_markers();
     global_mode = INTERACTIVE_MODE;
   } else if (global_mode == VERTICAL_SLIDE_IN_MODE && global_t > 0.25) {
+    global_source_diagram = global_next_source_diagram;
+    global_target_diagram = global_next_target_diagram;
     global_mode = VERTICAL_SLIDE_MODE;
   } else if (global_mode == HORIZONTAL_SLIDE_IN_MODE && global_t > 0.25) {
+    global_source_diagram = global_next_source_diagram;
+    global_target_diagram = global_next_target_diagram;
     global_mode = HORIZONTAL_SLIDE_MODE;
   } else if (global_mode == VERTICAL_SLIDE_OUT_MODE && global_t > 0.25) {
     global_mode = INTERACTIVE_MODE;

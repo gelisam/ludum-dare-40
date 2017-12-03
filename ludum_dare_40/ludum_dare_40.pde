@@ -754,6 +754,7 @@ void mouseMoved() {
     } else {
       global_source_diagram.hover = null;
     }
+    global_target_diagram.hover = null;
   } else {
     // hover over target diagram?
 
@@ -766,6 +767,7 @@ void mouseMoved() {
     } else {
       global_target_diagram.hover = null;
     }
+    global_source_diagram.hover = null;
   }
 }
 

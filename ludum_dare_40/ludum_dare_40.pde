@@ -61,6 +61,8 @@ final PVector BOX_CORNER_VLR = new PVector( BOX_CORNER_LR.x, BOX_CORNER_LR.y+1 )
 int global_mode = 0;
 float global_t = 0.0;
 
+int current_round = 1;
+
 final NamePool global_name_pool = new NamePool();
 Diagram global_source_diagram;
 Diagram global_target_diagram;
@@ -611,6 +613,13 @@ void draw() {
 
   fill(0);
   rect(TARGET_CALENDAR_X-23, TARGET_CALENDAR_Y, 11, TIMESLOT_HEIGHT*7);
+
+  fill(39, 58, 87); //fill(78, 115, 172);
+  textFont(font24, 24);
+  text( "CODE COMPLETE", SOURCE_CALENDAR_X, (SOURCE_CALENDAR_Y/2)-5, 
+    TIMESLOT_WIDTH*5, (SOURCE_CALENDAR_Y/2)+10);
+  text( "WORK IN PROGRESS - "+current_round, TARGET_CALENDAR_X, (SOURCE_CALENDAR_Y/2)-5, 
+    TIMESLOT_WIDTH*7, (SOURCE_CALENDAR_Y/2)+10);
 
   // DEBUG
 }

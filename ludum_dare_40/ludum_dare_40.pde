@@ -294,7 +294,12 @@ void commit() {
       global_target_diagram = next_diagram;
     }
 
-    global_mode = INTERACTIVE_MODE;
+    if (global_source_diagram.anchor == null) {
+      // THE END
+      global_mode = ADMIRING_RESULTS_MODE;
+    } else {
+      global_mode = INTERACTIVE_MODE;
+    }
   }
 }
 
@@ -856,7 +861,6 @@ void mouseReleased() {
           target_anchor_entry.conflicting = true;
         }
 
-        // TODO: null pointer at end of game
         PVector anchor_delta = PVector.sub(global_source_diagram.anchor, global_target_diagram.hover);
         Region non_conflicting_region = new Region(anchor_delta, PVector.add(anchor_delta, new PVector(global_target_diagram.w-1, global_target_diagram.h-1)));
         if (!non_conflicting_region.contains_smaller_region(global_source_diagram.region)) {

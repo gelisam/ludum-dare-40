@@ -72,10 +72,12 @@ Diagram global_completed_diagram;
 Diagram global_source_diagram;
 Diagram global_target_diagram;
 
-Slide global_slide = new Slide("Insert Title Here");
+Slide global_slide;
 
 PFont font16;
 PFont font24;
+PFont font32;
+PFont font48;
 PImage background_image;
 PImage timeslot_image;
 PImage anchor_image;
@@ -431,6 +433,8 @@ void setup() {
   stroke(0);
   font16 = loadFont("TektonPro-BoldObl-16.vlw");
   font24 = loadFont("TektonPro-BoldObl-24.vlw");
+  font32 = loadFont("TektonPro-BoldObl-32.vlw");
+  font48 = loadFont("TektonPro-BoldObl-48.vlw");
   textAlign(CENTER);
 
   background_image = loadImage("background_paper.png");
@@ -443,6 +447,12 @@ void setup() {
   // Init buttons
   refactor_button = new Button("REFACTOR", REFACTOR_BUTTON_WIDTH, REFACTOR_BUTTON_HEIGHT);
   commit_button = new Button("COMMIT", COMMIT_BUTTON_WIDTH, COMMIT_BUTTON_HEIGHT); 
+
+  // Init global slide
+  global_slide = new Slide("Insert Title Here");
+  global_slide.bullet_points.append("• First point");
+  global_slide.bullet_points.append("• Second point");
+  global_slide.bullet_points.append("• Third point");
 
   loadScenario(1);
 }
@@ -538,8 +548,15 @@ class Slide {
 
   void draw() {
     fill(0);
-    textFont(font24, 24);
-    text(title, WINDOW_WIDTH/2, WINDOW_HEIGHT/2);
+    textFont(font48, 48);
+    text(title, WINDOW_WIDTH/2, WINDOW_HEIGHT/4);
+
+    textFont(font32, 32);
+    textAlign(LEFT);
+    for (int j=0; j<bullet_points.size(); ++j) {
+      text(bullet_points.get(j), WINDOW_WIDTH/4, WINDOW_HEIGHT/2 + j*50);
+    }
+    textAlign(CENTER);
   }
 }
 

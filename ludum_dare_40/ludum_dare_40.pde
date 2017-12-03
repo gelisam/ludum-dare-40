@@ -205,6 +205,174 @@ Diagram loadRound(int scenario, int round, boolean for_real)
     }
   } else if (scenario == 2) {
     if (round == 0) {
+      if (for_real) {
+        box = new Box(global_name_pool.next_name(), WHITE_ARROW_CONNECTOR);
+        box.connectors.add(new PVector(0, 2));
+        result.entries.put(new PVector(0, 0), box);
+
+        box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+        result.entries.put(new PVector(0, 2), box);
+      }
+    } else if (round == 1) {
+      if (for_real) {
+        for (int j=0; j<7; ++j) {
+          blocker = new Blocker((j == 0) ? "Weekend" : "");
+          result.entries.put(new PVector(0, j), blocker);
+
+          blocker = new Blocker((j == 0) ? "Weekend" : "");
+          result.entries.put(new PVector(6, j), blocker);
+        }
+
+        blocker = new Blocker("Meeting about\npriorities");
+        result.entries.put(new PVector(2, 1), blocker);
+
+        blocker = new Blocker("Meeting about\ntech debt");
+        result.entries.put(new PVector(3, 4), blocker);
+
+        blocker = new Blocker("Meeting about\n\"Agile\"");
+        result.entries.put(new PVector(5, 6), blocker);
+
+        box = new Box(global_name_pool.next_name(), WHITE_ARROW_CONNECTOR);
+        box.connectors.add(new PVector(-1, 2));
+        box.connectors.add(new PVector(1, 2));
+        result.entries.put(new PVector(3, 2), box);
+
+        box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+        result.entries.put(new PVector(2, 4), box);
+
+        box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+        result.entries.put(new PVector(4, 4), box);
+      }
+    } else if (round == 2) {
+      if (for_real) {
+        for (int j=0; j<6; ++j) {
+          blocker = new Blocker((j == 0) ? "Weekend" : "");
+          result.entries.put(new PVector(0, j), blocker);
+
+          blocker = new Blocker((j == 0) ? "Weekend" : "");
+          result.entries.put(new PVector(6, j), blocker);
+
+          if (j % 2 == 0) {
+            blocker = new Blocker("Sprint planning");
+            result.entries.put(new PVector(1, j), blocker);
+          } else {
+            blocker = new Blocker("Sprint review");
+            result.entries.put(new PVector(5, j), blocker);
+          }
+        }
+
+        blocker = new Blocker("");
+        result.entries.put(new PVector(0, 6), blocker);
+
+        blocker = new Blocker("Week-long");
+        result.entries.put(new PVector(1, 6), blocker);
+
+        blocker = new Blocker("seminar");
+        result.entries.put(new PVector(2, 6), blocker);
+
+        blocker = new Blocker("about");
+        result.entries.put(new PVector(3, 6), blocker);
+
+        blocker = new Blocker("code");
+        result.entries.put(new PVector(4, 6), blocker);
+
+        blocker = new Blocker("quality");
+        result.entries.put(new PVector(5, 6), blocker);
+
+        blocker = new Blocker("");
+        result.entries.put(new PVector(6, 6), blocker);
+
+        box = new Box(global_name_pool.next_name(), WHITE_ARROW_CONNECTOR);
+        box.connectors.add(new PVector(0, 2));
+        result.entries.put(new PVector(2, 1), box);
+
+        box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+        result.entries.put(new PVector(2, 3), box);
+      }
+    } else if (round == 3) {
+      if (for_real) {
+        for (int j=0; j<5; ++j) {
+          blocker = new Blocker((j == 0) ? "Weekend" : "");
+          result.entries.put(new PVector(0, j), blocker);
+
+          blocker = new Blocker((j == 0) ? "Weekend" : "");
+          result.entries.put(new PVector(6, j), blocker);
+
+          if (j % 2 == 0) {
+            blocker = new Blocker("Sprint planning");
+            result.entries.put(new PVector(1, j), blocker);
+          } else {
+            blocker = new Blocker("Unit tests");
+            result.entries.put(new PVector(3, j), blocker);
+
+            blocker = new Blocker("QA");
+            result.entries.put(new PVector(4, j), blocker);
+
+            blocker = new Blocker("Sprint review");
+            result.entries.put(new PVector(5, j), blocker);
+          }
+        }
+
+        blocker = new Blocker("Unit tests");
+        result.entries.put(new PVector(4, 4), blocker);
+
+        blocker = new Blocker("QA");
+        result.entries.put(new PVector(5, 4), blocker);
+
+        blocker = new Blocker("");
+        result.entries.put(new PVector(0, 5), blocker);
+
+        blocker = new Blocker("Sprint review");
+        result.entries.put(new PVector(1, 5), blocker);
+
+        blocker = new Blocker("DEADLINE");
+        result.entries.put(new PVector(2, 5), blocker);
+
+        box = new Box(global_name_pool.next_name(), WHITE_ARROW_CONNECTOR);
+        box.connectors.add(new PVector(0, 2));
+        result.entries.put(new PVector(3, 2), box);
+
+        box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+        result.entries.put(new PVector(3, 4), box);
+      }
+    } else if (round == 4) {
+      if (for_real) {
+        for (int j=0; j<4; ++j) {
+          if (j % 2 == 0) {
+            blocker = new Blocker("Sprint planning");
+            result.entries.put(new PVector(1, j), blocker);
+          } else {
+            blocker = new Blocker("Unit tests");
+            result.entries.put(new PVector(3, j), blocker);
+
+            blocker = new Blocker("QA");
+            result.entries.put(new PVector(4, j), blocker);
+
+            blocker = new Blocker("Sprint review");
+            result.entries.put(new PVector(5, j), blocker);
+          }
+        }
+
+        blocker = new Blocker("Last minute\ntesting");
+        result.entries.put(new PVector(6, 4), blocker);
+
+        for (int j=5; j<7; ++j) {
+          for (int i=0; i<7; ++i) {
+            blocker = new Blocker("");
+            result.entries.put(new PVector(i, j), blocker);
+          }
+        }
+        blocker = new Blocker("Real\ndeadline");
+        result.entries.put(new PVector(0, 5), blocker);
+
+        box = new Box("Polish", NO_CONNECTOR);
+        result.entries.put(new PVector(5, 4), box);
+      }
+    } else {
+      return null;
+    }
+  } else if (scenario == 3) {
+    if (round == 0) {
     } else if (round == 1) {
       if (for_real) {
         blocker = new Blocker("by");

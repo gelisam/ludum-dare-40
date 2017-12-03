@@ -4,7 +4,7 @@ final int WINDOW_WIDTH = 1280;
 final int WINDOW_HEIGHT = 800;
 final int TIMESLOT_WIDTH = 100;
 final int TIMESLOT_HEIGHT = 100;
-final int CLASS_WIDTH = 80;
+final int CLASS_WIDTH = 90;
 final int CLASS_HEIGHT = 65;
 final int CLASS_DX = (TIMESLOT_WIDTH - CLASS_WIDTH) / 2;
 final int CLASS_DY = (TIMESLOT_HEIGHT - CLASS_HEIGHT) / 2;
@@ -90,6 +90,116 @@ Diagram loadRound(int scenario, int round, boolean for_real)
   Blocker blocker;
 
   if (scenario == 1) {
+
+
+    if (round == 0) {
+      if (for_real) {
+        box = new Box( "Genre:Gothic", BLACK_DIAMOND_CONNECTOR);
+        box.connectors.add(new PVector(0, 1));
+        result.entries.put(new PVector(0, 0), box);
+
+        box = new Box("Steampunk", WHITE_ARROW_CONNECTOR);
+        result.entries.put(new PVector(0, 1), box);
+      }
+    } else if (round == 1) {
+      if (for_real) {
+        box = new Box("Librarian", WHITE_ARROW_CONNECTOR);
+        box.connectors.add(new PVector(0, 1));
+        result.entries.put(new PVector(3, 2), box);
+
+        box = new Box("Genre:Gothic", BLACK_DIAMOND_CONNECTOR);
+        result.entries.put(new PVector(3, 3), box);
+      }
+    } else if (round == 2) {
+      if (for_real) {
+        box = new Box("Dating Sim", BLACK_DIAMOND_CONNECTOR);
+        result.entries.put(new PVector(3, 2), box);
+
+        blocker = new Blocker("\" RESEARCH \"");
+        result.entries.put(new PVector(3, 3), blocker);
+
+        blocker = new Blocker("* cough *");
+        result.entries.put(new PVector(3, 4), blocker);
+      }
+    } else if (round == 3) {
+      if (for_real) {
+        box = new Box("Horror", WHITE_ARROW_CONNECTOR);
+        box.connectors.add(new PVector(-1, 1));
+        box.connectors.add(new PVector(1, 1));
+        result.entries.put(new PVector(2, 0), box);
+
+        box = new Box("Slasher", BLACK_DIAMOND_CONNECTOR);
+        result.entries.put(new PVector(1, 1), box);
+
+        box = new Box("Zombie", WHITE_ARROW_CONNECTOR);
+        box.connectors.add(new PVector(2, 1));
+        result.entries.put(new PVector(3, 1), box);
+
+        box = new Box("Apocalypse", BLACK_DIAMOND_CONNECTOR);
+        result.entries.put(new PVector(5, 2), box);
+      }
+    } else if (round == 4) {
+      if (for_real) {
+        box = new Box("HouseType", WHITE_ARROW_CONNECTOR);
+        box.connectors.add(new PVector(-1, 1));
+        result.entries.put(new PVector(5, 1), box);
+
+        box = new Box("HouseDate", BLACK_DIAMOND_CONNECTOR);
+        result.entries.put(new PVector(4, 2), box);
+
+        blocker = new Blocker("nap");
+        result.entries.put(new PVector(0, 1), blocker);
+        blocker = new Blocker("nap");
+        result.entries.put(new PVector(1, 2), blocker);
+        blocker = new Blocker("...zzz...");
+        result.entries.put(new PVector(2, 2), blocker);
+        blocker = new Blocker("nap");
+        result.entries.put(new PVector(3, 3), blocker);
+        blocker = new Blocker("munchies");
+        result.entries.put(new PVector(4, 3), blocker);
+        blocker = new Blocker("nap");
+        result.entries.put(new PVector(5, 3), blocker);
+      }
+    } else if (round == 5) {
+      if (for_real) {
+        box = new Box("Clown", NO_CONNECTOR);
+        result.entries.put(new PVector(1, 1), box);
+        box = new Box("Zombie", WHITE_ARROW_CONNECTOR);
+        result.entries.put(new PVector(2, 1), box);
+
+        box = new Box("Dragon", NO_CONNECTOR);
+        //box.connectors.add(new PVector(-2, 1));
+        result.entries.put(new PVector(4, 1), box);
+
+        blocker = new Blocker("");
+        result.entries.put(new PVector(0, 0), blocker);
+        blocker = new Blocker("");
+        result.entries.put(new PVector(0, 2), blocker);
+        blocker = new Blocker("Camp");
+        result.entries.put(new PVector(1, 2), blocker);
+        blocker = new Blocker("");
+        result.entries.put(new PVector(3, 0), blocker);
+        blocker = new Blocker("");
+        result.entries.put(new PVector(3, 3), blocker);
+        blocker = new Blocker("");
+        result.entries.put(new PVector(4, 0), blocker);
+        blocker = new Blocker("");
+        result.entries.put(new PVector(5, 0), blocker);
+        blocker = new Blocker("");
+        result.entries.put(new PVector(5, 1), blocker);
+        blocker = new Blocker("");
+        result.entries.put(new PVector(5, 2), blocker);
+        blocker = new Blocker("Netflix\n& Chill");
+        result.entries.put(new PVector(2, 3), blocker);
+        blocker = new Blocker("Cards");
+        result.entries.put(new PVector(3, 2), blocker);
+        blocker = new Blocker("Metal Band");
+        result.entries.put(new PVector(4, 3), blocker);
+      }
+    } else {
+      return null;
+    }
+  } else if (scenario == 2) {
     if (round == 0) {
       if (for_real) {
         box = new Box(global_name_pool.next_name(), BLACK_DIAMOND_CONNECTOR);
@@ -128,7 +238,7 @@ Diagram loadRound(int scenario, int round, boolean for_real)
     } else {
       return null;
     }
-  } else if (scenario == 2) {
+  } else if (scenario == 3) {
     if (round == 0) {
       if (for_real) {
         box = new Box(global_name_pool.next_name(), BLACK_DIAMOND_CONNECTOR);

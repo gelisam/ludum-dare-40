@@ -61,10 +61,11 @@ final PVector BOX_CORNER_VLR = new PVector( BOX_CORNER_LR.x, BOX_CORNER_LR.y+1 )
 int global_mode = 0;
 float global_t = 0.0;
 
-int current_round = 1;
+int current_scenario;
+int current_round;
 
-final NamePool global_name_pool = new NamePool();
-ArrayList<Diagram> global_completed_diagrams = new ArrayList();
+NamePool global_name_pool;
+ArrayList<Diagram> global_completed_diagrams;
 Diagram global_source_diagram;
 Diagram global_target_diagram;
 
@@ -79,41 +80,54 @@ PImage conflicting_timeslot_image;
 Button refactor_button;
 Button commit_button;
 
-void newRound( int round )
+Diagram loadRound( int scenario, int round )
 {
+  Diagram result = new Diagram(7, 7);
   Box box;
   Blocker blocker;
 
-  // Init source calendar
-  global_source_diagram = new Diagram(5, 6);
+  if (scenario == 1) {
+    if (round == 0) {
+      box = new Box(global_name_pool.next_name(), BLACK_DIAMOND_CONNECTOR);
+      box.connectors.add(new PVector(0, 1));
+      result.entries.put(new PVector(0, 0), box);
 
-  // Init source entries
-  box = new Box(global_name_pool.next_name(), BLACK_DIAMOND_CONNECTOR);
-  box.connectors.add(new PVector(0, 1));
-  global_source_diagram.entries.put(new PVector(0, 0), box);
+      box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+      result.entries.put(new PVector(0, 1), box);
+    } else if (round == 1) {
+      box = new Box(global_name_pool.next_name(), WHITE_ARROW_CONNECTOR);
+      box.connectors.add(new PVector(0, 1));
+      box.connectors.add(new PVector(1, 1));
+      result.entries.put(new PVector(1, 1), box);
 
-  box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
-  global_source_diagram.entries.put(new PVector(0, 1), box);
+      box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+      result.entries.put(new PVector(1, 2), box);
 
+      box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+      result.entries.put(new PVector(2, 2), box);
+
+      blocker = new Blocker("meeting");
+      result.entries.put(new PVector(2, 3), blocker);
+    }
+  }
+
+  return result;
+}
+
+void loadScenario(int scenario) {
+  global_name_pool = new NamePool();
+  global_completed_diagrams = new ArrayList();
+
+  current_scenario = scenario;
+  current_round = 1;
+
+  Diagram completed_diagram = loadRound(scenario, 0).shrink();
+  global_completed_diagrams.add(completed_diagram);
+
+  global_source_diagram = completed_diagram;
   global_source_diagram.guess_anchor();
 
-  // Init target diagram
-  global_target_diagram = new Diagram(7, 7);
-
-  // Init target entries
-  box = new Box(global_name_pool.next_name(), WHITE_ARROW_CONNECTOR);
-  box.connectors.add(new PVector(0, 1));
-  box.connectors.add(new PVector(1, 1));
-  global_target_diagram.entries.put(new PVector(1, 1), box);
-
-  box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
-  global_target_diagram.entries.put(new PVector(1, 2), box);
-
-  box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
-  global_target_diagram.entries.put(new PVector(2, 2), box);
-
-  blocker = new Blocker("meeting");
-  global_target_diagram.entries.put(new PVector(2, 3), blocker);
+  global_target_diagram = loadRound(scenario, 1);
 }
 
 void setup() {
@@ -134,7 +148,7 @@ void setup() {
   refactor_button = new Button("REFACTOR", REFACTOR_BUTTON_WIDTH, REFACTOR_BUTTON_HEIGHT);
   commit_button = new Button("COMMIT", COMMIT_BUTTON_WIDTH, COMMIT_BUTTON_HEIGHT); 
 
-  newRound(1);
+  loadScenario(1);
 }
 
 
@@ -157,18 +171,37 @@ boolean is_flashing_red() {
 }
 
 
+boolean can_refactor() {
+  return !global_completed_diagrams.isEmpty();
+}
+
 void refactor() {
-  if (!global_completed_diagrams.isEmpty()) {
-    global_target_diagram = global_source_diagram;
+  if (can_refactor()) {
+    --current_round;
+
     global_source_diagram = global_completed_diagrams.remove(global_completed_diagrams.size() - 1);
     global_source_diagram.guess_anchor();
+
+    global_target_diagram = loadRound(current_scenario, current_round);
   }
 }
 
+boolean can_commit() {
+  return true;
+}
+
 void commit() {
-  global_source_diagram = global_target_diagram.simplify();
-  global_completed_diagrams.add(global_source_diagram);
-  global_source_diagram.guess_anchor();
+  if (can_commit()) {
+    ++current_round;
+
+    Diagram completed_diagram = global_source_diagram;
+    global_completed_diagrams.add(completed_diagram);
+
+    global_source_diagram = global_target_diagram.simplify();
+    global_source_diagram.guess_anchor();
+
+    global_target_diagram = loadRound(current_scenario, current_round);
+  }
 }
 
 
@@ -665,10 +698,12 @@ void draw() {
   translate(-TARGET_CALENDAR_X, -TARGET_CALENDAR_Y); // popMatrix()
 
   translate(REFACTOR_BUTTON_X, REFACTOR_BUTTON_Y); // pushMatrix()
+  refactor_button.isEnabled = can_refactor();
   refactor_button.draw();
   translate(-REFACTOR_BUTTON_X, -REFACTOR_BUTTON_Y); // pushMatrix()
 
   translate(COMMIT_BUTTON_X, COMMIT_BUTTON_Y); // pushMatrix()
+  commit_button.isEnabled = can_commit();
   commit_button.draw();
   translate(-COMMIT_BUTTON_X, -COMMIT_BUTTON_Y); // pushMatrix()
 
@@ -737,8 +772,9 @@ void mouseReleased() {
           if (result == null) {
             display_conflicts();
           } else {
-            global_target_diagram.anchor = global_target_diagram.hover;
+            PVector anchor = global_target_diagram.hover;
             global_target_diagram = result;
+            global_target_diagram.anchor = anchor;
           }
         }
       }

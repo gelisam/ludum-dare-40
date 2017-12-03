@@ -93,6 +93,7 @@ PFont font16;
 PFont font24;
 PFont font32;
 PFont font48;
+PImage title_image;
 PImage background_image;
 PImage timeslot_image;
 PImage anchor_image;
@@ -122,13 +123,15 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       }
     } else if (round == 1) {
       if (for_real) {
-        global_slide = new Slide("Scenario 1 - Tutorial");
-        global_slide.bullet_points.append("• Click one UML class from \"code complete\"");
-        global_slide.bullet_points.append("• Match to a UML class from \"work in progress\"");
-        global_slide.bullet_points.append("• Symbols on both classes must match");
-        global_slide.bullet_points.append("• No other class may overlap");
-        global_slide.bullet_points.append("• Commit your work when done");
-        global_slide.bullet_points.append("• Don't forget to breathe!");
+        global_slide = new Slide("");
+        global_slide.image = title_image;
+        //global_slide = new Slide("Scenario 1 - Tutorial");
+        //global_slide.bullet_points.append("• Click one UML class from \"code complete\"");
+        //global_slide.bullet_points.append("• Match to a UML class from \"work in progress\"");
+        //global_slide.bullet_points.append("• Symbols on both classes must match");
+        //global_slide.bullet_points.append("• No other class may overlap");
+        //global_slide.bullet_points.append("• Commit your work when done");
+        //global_slide.bullet_points.append("• Don't forget to breathe!");
 
 
         box = new Box("Librarian", WHITE_ARROW_CONNECTOR);
@@ -511,6 +514,7 @@ void setup() {
   font48 = loadFont("TektonPro-BoldObl-48.vlw");
   textAlign(CENTER);
 
+  title_image = loadImage("title.png");
   background_image = loadImage("background_paper.png");
   timeslot_image = loadImage("background_timeslot.png");
   anchor_image = loadImage("background_timeslot_hilight.png");
@@ -635,6 +639,7 @@ void dismiss_slide() {
 }
 
 class Slide {
+  PImage image = null;
   String title;
   StringList bullet_points = new StringList();
 
@@ -643,16 +648,20 @@ class Slide {
   }
 
   void draw() {
-    fill(0);
-    textFont(font48, 48);
-    text(title, WINDOW_WIDTH/2, WINDOW_HEIGHT/4);
+    if (image != null) {
+      image(image, 0, 0);
+    } else {
+      fill(0);
+      textFont(font48, 48);
+      text(title, WINDOW_WIDTH/2, WINDOW_HEIGHT/4);
 
-    textFont(font32, 32);
-    textAlign(LEFT);
-    for (int j=0; j<bullet_points.size(); ++j) {
-      text(bullet_points.get(j), WINDOW_WIDTH/4, WINDOW_HEIGHT/2 + j*50);
+      textFont(font32, 32);
+      textAlign(LEFT);
+      for (int j=0; j<bullet_points.size(); ++j) {
+        text(bullet_points.get(j), WINDOW_WIDTH/4, WINDOW_HEIGHT/2 + j*50);
+      }
+      textAlign(CENTER);
     }
-    textAlign(CENTER);
   }
 }
 

@@ -157,18 +157,28 @@ boolean is_flashing_red() {
 }
 
 
+boolean can_refactor() {
+  return !global_completed_diagrams.isEmpty();
+}
+
 void refactor() {
-  if (!global_completed_diagrams.isEmpty()) {
+  if (can_refactor()) {
     global_target_diagram = global_source_diagram;
     global_source_diagram = global_completed_diagrams.remove(global_completed_diagrams.size() - 1);
     global_source_diagram.guess_anchor();
   }
 }
 
+boolean can_commit() {
+  return true;
+}
+
 void commit() {
-  global_source_diagram = global_target_diagram.simplify();
-  global_completed_diagrams.add(global_source_diagram);
-  global_source_diagram.guess_anchor();
+  if (can_commit()) {
+    global_source_diagram = global_target_diagram.simplify();
+    global_completed_diagrams.add(global_source_diagram);
+    global_source_diagram.guess_anchor();
+  }
 }
 
 
@@ -665,10 +675,12 @@ void draw() {
   translate(-TARGET_CALENDAR_X, -TARGET_CALENDAR_Y); // popMatrix()
 
   translate(REFACTOR_BUTTON_X, REFACTOR_BUTTON_Y); // pushMatrix()
+  refactor_button.isEnabled = can_refactor();
   refactor_button.draw();
   translate(-REFACTOR_BUTTON_X, -REFACTOR_BUTTON_Y); // pushMatrix()
 
   translate(COMMIT_BUTTON_X, COMMIT_BUTTON_Y); // pushMatrix()
+  commit_button.isEnabled = can_commit();
   commit_button.draw();
   translate(-COMMIT_BUTTON_X, -COMMIT_BUTTON_Y); // pushMatrix()
 

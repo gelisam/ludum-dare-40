@@ -62,6 +62,7 @@ int global_mode = 0;
 float global_t = 0.0;
 
 final NamePool global_name_pool = new NamePool();
+ArrayList<Diagram> global_completed_diagrams = new ArrayList();
 Diagram global_source_diagram;
 Diagram global_target_diagram;
 
@@ -151,6 +152,21 @@ void display_conflicts() {
 
 boolean is_flashing_red() {
   return (global_t % 0.2 < 0.1);
+}
+
+
+void refactor() {
+  if (!global_completed_diagrams.isEmpty()) {
+    global_target_diagram = global_source_diagram;
+    global_source_diagram = global_completed_diagrams.remove(global_completed_diagrams.size() - 1);
+    global_source_diagram.guess_anchor();
+  }
+}
+
+void commit() {
+  global_source_diagram = global_target_diagram.simplify();
+  global_completed_diagrams.add(global_source_diagram);
+  global_source_diagram.guess_anchor();
 }
 
 
@@ -503,6 +519,53 @@ class Diagram {
     }
   }
 
+  Diagram remove_blockers() {
+    Diagram result = new Diagram(w, h);
+
+    for (PVector delta : entries.keySet()) {
+      Entry entry = entries.get(delta);
+      if (entry instanceof Box) {
+        result.entries.put(delta, entry.copy());
+      }
+    }
+
+    return result;
+  }
+
+  Diagram shrink() {
+    int min_x = w;
+    int min_y = h;
+    int max_x = 0;
+    int max_y = 0;
+
+    for (PVector delta : entries.keySet()) {
+      int x = floor(delta.x);
+      int y = floor(delta.y);
+      min_x = min(min_x, x);
+      min_y = min(min_y, y);
+      max_x = max(max_x, x);
+      max_y = max(max_y, y);
+    }
+
+    int w = max_x - min_x + 1;
+    int h = max_y - min_y + 1;
+    PVector delta_diagram = new PVector(-min_x, -min_y);
+
+    Diagram result = new Diagram(w, h);
+
+    for (PVector delta : entries.keySet()) {
+      Entry entry = entries.get(delta);
+
+      result.entries.put(PVector.add(delta, delta_diagram), entry.copy());
+    }
+
+    return result;
+  }
+
+  Diagram simplify() {
+    return remove_blockers().shrink();
+  }
+
   void draw_anchor(int i, int j) {
     float r = 40;
     stroke(255, 0, 0);
@@ -693,6 +756,16 @@ void mouseMoved() {
       global_target_diagram.hover = new PVector(i, j);
     } else {
       global_target_diagram.hover = null;
+    }
+  }
+}
+
+void keyPressed() {
+  if (global_mode == INTERACTIVE_MODE) {
+    if (keyCode == LEFT) {
+      refactor();
+    } else if (keyCode == RIGHT) {
+      commit();
     }
   }
 }

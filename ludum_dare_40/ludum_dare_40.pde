@@ -681,7 +681,7 @@ void draw() {
   textFont(font24, 24);
   text( "CODE COMPLETE", SOURCE_CALENDAR_X, (SOURCE_CALENDAR_Y/2)-5, 
     TIMESLOT_WIDTH*5, (SOURCE_CALENDAR_Y/2)+10);
-  text( "WORK IN PROGRESS - "+current_round, TARGET_CALENDAR_X, (SOURCE_CALENDAR_Y/2)-5, 
+  text( "WORK IN PROGRESS - WEEK "+current_round, TARGET_CALENDAR_X, (SOURCE_CALENDAR_Y/2)-5, 
     TIMESLOT_WIDTH*7, (SOURCE_CALENDAR_Y/2)+10);
 
   // DEBUG
@@ -693,6 +693,11 @@ void mousePressed() {
 }
 
 void mouseReleased() {
+  if ( commit_button.isPressed ) {
+    commit();
+  } else if ( refactor_button.isPressed ) {
+    refactor();
+  }
   commit_button.onMouseReleased(mouseX-COMMIT_BUTTON_X, mouseY-COMMIT_BUTTON_Y); 
   refactor_button.onMouseReleased(mouseX-REFACTOR_BUTTON_X, mouseY-REFACTOR_BUTTON_Y);
 

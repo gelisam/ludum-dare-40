@@ -926,7 +926,7 @@ void mouseMoved() {
 }
 
 void keyPressed() {
-  if (global_mode != DISPLAYING_CONFLICTS_MODE) {
+  if (global_mode == INTERACTIVE_MODE || global_mode == ADMIRING_RESULTS_MODE) {
     if (keyCode == LEFT) {
       refactor();
     } else if (keyCode == RIGHT) {

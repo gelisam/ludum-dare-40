@@ -31,6 +31,7 @@ final int WHITE_DIAMOND_CONNECTOR = 3; // aggregation
 // interactive modes
 final int INTERACTIVE_MODE = 0;
 final int DISPLAYING_CONFLICTS_MODE = 1;
+final int ADMIRING_RESULTS_MODE = 2;
 
 final int BOX_ALPHA = 128;
 
@@ -81,7 +82,8 @@ PImage blocker_image;
 Button refactor_button;
 Button commit_button;
 
-Diagram loadRound( int scenario, int round )
+// null if the scenario is complete
+Diagram loadRound(int scenario, int round, boolean for_real)
 {
   Diagram result = new Diagram(7, 7);
   Box box;
@@ -89,26 +91,71 @@ Diagram loadRound( int scenario, int round )
 
   if (scenario == 1) {
     if (round == 0) {
-      box = new Box(global_name_pool.next_name(), BLACK_DIAMOND_CONNECTOR);
-      box.connectors.add(new PVector(0, 1));
-      result.entries.put(new PVector(0, 0), box);
+      if (for_real) {
+        box = new Box(global_name_pool.next_name(), BLACK_DIAMOND_CONNECTOR);
+        box.connectors.add(new PVector(0, 1));
+        result.entries.put(new PVector(0, 0), box);
 
-      box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
-      result.entries.put(new PVector(0, 1), box);
+        box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+        result.entries.put(new PVector(0, 1), box);
+      }
     } else if (round == 1) {
-      box = new Box(global_name_pool.next_name(), WHITE_ARROW_CONNECTOR);
-      box.connectors.add(new PVector(0, 1));
-      box.connectors.add(new PVector(1, 1));
-      result.entries.put(new PVector(1, 1), box);
+      if (for_real) {
+        box = new Box(global_name_pool.next_name(), WHITE_ARROW_CONNECTOR);
+        box.connectors.add(new PVector(-1, 1));
+        box.connectors.add(new PVector(1, 1));
+        result.entries.put(new PVector(3, 2), box);
 
-      box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
-      result.entries.put(new PVector(1, 2), box);
+        box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+        result.entries.put(new PVector(2, 3), box);
 
-      box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
-      result.entries.put(new PVector(2, 2), box);
+        box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+        result.entries.put(new PVector(4, 3), box);
+      }
+    } else if (round == 2) {
+      if (for_real) {
+        box = new Box(global_name_pool.next_name(), WHITE_ARROW_CONNECTOR);
+        box.connectors.add(new PVector(-1, 1));
+        box.connectors.add(new PVector(1, 1));
+        result.entries.put(new PVector(3, 2), box);
 
-      blocker = new Blocker("meeting");
-      result.entries.put(new PVector(2, 3), blocker);
+        box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+        result.entries.put(new PVector(2, 3), box);
+
+        box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+        result.entries.put(new PVector(4, 3), box);
+      }
+    } else {
+      return null;
+    }
+  } else if (scenario == 2) {
+    if (round == 0) {
+      if (for_real) {
+        box = new Box(global_name_pool.next_name(), BLACK_DIAMOND_CONNECTOR);
+        box.connectors.add(new PVector(0, 1));
+        result.entries.put(new PVector(0, 0), box);
+
+        box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+        result.entries.put(new PVector(0, 1), box);
+      }
+    } else if (round == 1) {
+      if (for_real) {
+        box = new Box(global_name_pool.next_name(), WHITE_ARROW_CONNECTOR);
+        box.connectors.add(new PVector(0, 1));
+        box.connectors.add(new PVector(1, 1));
+        result.entries.put(new PVector(1, 1), box);
+
+        box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+        result.entries.put(new PVector(1, 2), box);
+
+        box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+        result.entries.put(new PVector(2, 2), box);
+
+        blocker = new Blocker("meeting");
+        result.entries.put(new PVector(2, 3), blocker);
+      }
+    } else {
+      return null;
     }
   }
 
@@ -122,13 +169,13 @@ void loadScenario(int scenario) {
   current_scenario = scenario;
   current_round = 1;
 
-  Diagram completed_diagram = loadRound(scenario, 0).shrink();
+  Diagram completed_diagram = loadRound(scenario, 0, true).shrink();
   global_completed_diagrams.add(completed_diagram);
 
   global_source_diagram = completed_diagram;
   global_source_diagram.guess_anchor();
 
-  global_target_diagram = loadRound(scenario, 1);
+  global_target_diagram = loadRound(scenario, 1, true);
 }
 
 void setup() {
@@ -174,7 +221,7 @@ boolean is_flashing_red() {
 
 
 boolean can_refactor() {
-  return !global_completed_diagrams.isEmpty();
+  return (global_completed_diagrams.size() > 1);
 }
 
 void refactor() {
@@ -184,12 +231,18 @@ void refactor() {
     global_source_diagram = global_completed_diagrams.remove(global_completed_diagrams.size() - 1);
     global_source_diagram.guess_anchor();
 
-    global_target_diagram = loadRound(current_scenario, current_round);
+    global_target_diagram = loadRound(current_scenario, current_round, true);
+
+    global_mode = INTERACTIVE_MODE;
   }
 }
 
 boolean can_commit() {
-  return true;
+  return (global_mode == ADMIRING_RESULTS_MODE);
+}
+
+boolean is_last_round() {
+  return (loadRound(current_scenario, current_round+1, false) == null);
 }
 
 void commit() {
@@ -202,7 +255,14 @@ void commit() {
     global_source_diagram = global_target_diagram.simplify();
     global_source_diagram.guess_anchor();
 
-    global_target_diagram = loadRound(current_scenario, current_round);
+    Diagram next_diagram = loadRound(current_scenario, current_round, true);
+    if (next_diagram == null) {
+      loadScenario(current_scenario+1);
+    } else {
+      global_target_diagram = next_diagram;
+    }
+
+    global_mode = INTERACTIVE_MODE;
   }
 }
 
@@ -708,6 +768,7 @@ void draw() {
 
   translate(COMMIT_BUTTON_X, COMMIT_BUTTON_Y); // pushMatrix()
   commit_button.isEnabled = can_commit();
+  commit_button.name = is_last_round() ? "SHIP IT!" : "COMMIT";
   commit_button.draw();
   translate(-COMMIT_BUTTON_X, -COMMIT_BUTTON_Y); // pushMatrix()
 
@@ -779,6 +840,8 @@ void mouseReleased() {
             PVector anchor = global_target_diagram.hover;
             global_target_diagram = result;
             global_target_diagram.anchor = anchor;
+
+            global_mode = ADMIRING_RESULTS_MODE;
           }
         }
       }
@@ -817,7 +880,7 @@ void mouseMoved() {
 }
 
 void keyPressed() {
-  if (global_mode == INTERACTIVE_MODE) {
+  if (global_mode != DISPLAYING_CONFLICTS_MODE) {
     if (keyCode == LEFT) {
       refactor();
     } else if (keyCode == RIGHT) {

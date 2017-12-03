@@ -9,10 +9,18 @@ final int CLASS_HEIGHT = 65;
 final int CLASS_DX = (TIMESLOT_WIDTH - CLASS_WIDTH) / 2;
 final int CLASS_DY = (TIMESLOT_HEIGHT - CLASS_HEIGHT) / 2;
 final int CALENDAR_GAP = 150;
-final int SOURCE_CALENDAR_X = 65;
+final int SOURCE_CALENDAR_X = 20; //65;
 final int SOURCE_CALENDAR_Y = 45;
-final int TARGET_CALENDAR_X = 502;
+final int TARGET_CALENDAR_X = 556; //502;
 final int TARGET_CALENDAR_Y = 45;
+final int REFACTOR_BUTTON_WIDTH = 236;
+final int REFACTOR_BUTTON_HEIGHT = 80;
+final int REFACTOR_BUTTON_X = SOURCE_CALENDAR_X;
+final int REFACTOR_BUTTON_Y = SOURCE_CALENDAR_Y+620;
+final int COMMIT_BUTTON_WIDTH = 236;
+final int COMMIT_BUTTON_HEIGHT = 80;
+final int COMMIT_BUTTON_X = SOURCE_CALENDAR_X+262;
+final int COMMIT_BUTTON_Y = REFACTOR_BUTTON_Y;
 
 // connector types
 final int NO_CONNECTOR = 0;
@@ -64,26 +72,18 @@ PImage anchor_image;
 PImage hover_image;
 PImage conflicting_timeslot_image;
 
+Button refactor_button;
+Button commit_button;
 
-void setup() {
-  size(1280, 800);
-
-  stroke(0);
-  font = loadFont("TektonPro-BoldObl-16.vlw");
-  textFont(font, 16);
-  textAlign(CENTER);
-
-  background_image = loadImage("background_paper.png");
-  timeslot_image = loadImage("background_timeslot.png");
-  anchor_image = loadImage("background_timeslot_hilight.png");
-  hover_image = loadImage("background_timeslot_hover.png");
-  conflicting_timeslot_image = loadImage("background_timeslot_conflict.png");
-
-
+void newRound( int round )
+{
   Box box;
 
+  //refactor_button.isEnabled = ( round>1 );
+  //commit_button.isEnabled = false;
+
   // Init source calendar
-  global_source_calendar = new Calendar(1, 2);
+  global_source_calendar = new Calendar(5, 6);
 
   // Init source boxes
   box = new Box(BLACK_DIAMOND_CONNECTOR);
@@ -109,6 +109,27 @@ void setup() {
 
   box = new Box(NO_CONNECTOR);
   global_target_calendar.diagram.boxes.put(new PVector(2, 2), box);
+}
+
+void setup() {
+  size(1280, 800);
+
+  stroke(0);
+  font = loadFont("TektonPro-BoldObl-16.vlw");
+  textFont(font, 16);
+  textAlign(CENTER);
+
+  background_image = loadImage("background_paper.png");
+  timeslot_image = loadImage("background_timeslot.png");
+  anchor_image = loadImage("background_timeslot_hilight.png");
+  hover_image = loadImage("background_timeslot_hover.png");
+  conflicting_timeslot_image = loadImage("background_timeslot_conflict.png");
+
+  // Init buttons
+  refactor_button = new Button("REFACTOR", REFACTOR_BUTTON_WIDTH, REFACTOR_BUTTON_HEIGHT);
+  commit_button = new Button("COMMIT", COMMIT_BUTTON_WIDTH, COMMIT_BUTTON_HEIGHT); 
+
+  newRound(1);
 }
 
 
@@ -292,7 +313,7 @@ class Box {
           fill(255);
         }
       }
-      quad(x1, y1, x1-5, y1+5, x1, y1+10, x1+5, y1+5);
+      quad(x1, y1-4, x1-5, y1+5, x1, y1+10, x1+5, y1+5);
     }
   }
 
@@ -447,6 +468,45 @@ class Calendar {
   }
 }
 
+class Button {
+  String name;
+  int w;
+  int h;
+  boolean isEnabled;
+  boolean isPressed;
+  Button( String name_, int w_, int h_ ) {
+    name = name_;
+    w = w_;
+    h = h_;
+    isEnabled = true;
+    isPressed = false;
+  }
+  void draw() {
+    if ( isEnabled ) {
+      if ( isPressed ) {
+        fill(128, 128, 255);
+      }
+      else {
+        fill(78, 115, 172);
+      }
+    } else {
+      fill(128, 128, 128);
+    }    
+    stroke(0, 0);
+    rect(0, 0, w, h);
+
+    fill( 255 );
+    textAlign( CENTER );
+    text(name, 0, (h/2)-10, w, (h/2)+10);
+  }
+  void onMousePressed( int x, int y ) {
+    isPressed = isEnabled && (x>=0) && (x<w) && (y>=0) && (y<h);
+  }
+  void onMouseReleased( int x, int y ) {
+    isPressed = false;
+  }
+}
+
 
 void draw() {
   // UPDATE
@@ -472,13 +532,31 @@ void draw() {
   global_target_calendar.draw();
   translate(-TARGET_CALENDAR_X, -TARGET_CALENDAR_Y); // popMatrix()
 
+  translate(REFACTOR_BUTTON_X, REFACTOR_BUTTON_Y); // pushMatrix()
+  refactor_button.draw();
+  translate(-REFACTOR_BUTTON_X, -REFACTOR_BUTTON_Y); // pushMatrix()
+
+  translate(COMMIT_BUTTON_X, COMMIT_BUTTON_Y); // pushMatrix()
+  commit_button.draw();
+  translate(-COMMIT_BUTTON_X, -COMMIT_BUTTON_Y); // pushMatrix()
+
   popMatrix();
 
+  fill(0);
+  rect(TARGET_CALENDAR_X-23, TARGET_CALENDAR_Y, 11, TIMESLOT_HEIGHT*7);
 
   // DEBUG
 }
 
+void mousePressed() {
+  commit_button.onMousePressed(mouseX-COMMIT_BUTTON_X, mouseY-COMMIT_BUTTON_Y); 
+  refactor_button.onMousePressed(mouseX-REFACTOR_BUTTON_X, mouseY-REFACTOR_BUTTON_Y);
+}
+
 void mouseReleased() {
+  commit_button.onMouseReleased(mouseX-COMMIT_BUTTON_X, mouseY-COMMIT_BUTTON_Y); 
+  refactor_button.onMouseReleased(mouseX-REFACTOR_BUTTON_X, mouseY-REFACTOR_BUTTON_Y);
+
   if (global_mode == INTERACTIVE_MODE) {
     if (mouseX < TARGET_CALENDAR_X) {
       // click on source calendar?

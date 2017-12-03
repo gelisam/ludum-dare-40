@@ -66,7 +66,6 @@ float global_t = 0.0;
 int current_scenario;
 int current_round;
 
-NamePool global_name_pool = new NamePool();
 ArrayList<Diagram> global_completed_diagrams;
 Diagram global_completed_diagram;
 Diagram global_source_diagram;
@@ -208,11 +207,11 @@ Diagram loadRound(int scenario, int round, boolean for_real)
   } else if (scenario == 2) {
     if (round == 0) {
       if (for_real) {
-        box = new Box(global_name_pool.next_name(), WHITE_ARROW_CONNECTOR);
+        box = new Box("Source", WHITE_ARROW_CONNECTOR);
         box.connectors.add(new PVector(0, 2));
         result.entries.put(new PVector(0, 0), box);
 
-        box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+        box = new Box("Target", NO_CONNECTOR);
         result.entries.put(new PVector(0, 2), box);
       }
     } else if (round == 1) {
@@ -234,15 +233,15 @@ Diagram loadRound(int scenario, int round, boolean for_real)
         blocker = new Blocker("Meeting about\n\"Agile\"");
         result.entries.put(new PVector(5, 6), blocker);
 
-        box = new Box(global_name_pool.next_name(), WHITE_ARROW_CONNECTOR);
+        box = new Box("Agent", WHITE_ARROW_CONNECTOR);
         box.connectors.add(new PVector(-1, 2));
         box.connectors.add(new PVector(1, 2));
         result.entries.put(new PVector(3, 2), box);
 
-        box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+        box = new Box("Server", NO_CONNECTOR);
         result.entries.put(new PVector(2, 4), box);
 
-        box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+        box = new Box("Client", NO_CONNECTOR);
         result.entries.put(new PVector(4, 4), box);
       }
     } else if (round == 2) {
@@ -284,11 +283,11 @@ Diagram loadRound(int scenario, int round, boolean for_real)
         blocker = new Blocker("");
         result.entries.put(new PVector(6, 6), blocker);
 
-        box = new Box(global_name_pool.next_name(), WHITE_ARROW_CONNECTOR);
+        box = new Box("Sender", WHITE_ARROW_CONNECTOR);
         box.connectors.add(new PVector(0, 2));
         result.entries.put(new PVector(2, 1), box);
 
-        box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+        box = new Box("Receiver", NO_CONNECTOR);
         result.entries.put(new PVector(2, 3), box);
       }
     } else if (round == 3) {
@@ -330,11 +329,11 @@ Diagram loadRound(int scenario, int round, boolean for_real)
         blocker = new Blocker("DEADLINE");
         result.entries.put(new PVector(2, 5), blocker);
 
-        box = new Box(global_name_pool.next_name(), WHITE_ARROW_CONNECTOR);
+        box = new Box("Connector", WHITE_ARROW_CONNECTOR);
         box.connectors.add(new PVector(0, 2));
         result.entries.put(new PVector(3, 2), box);
 
-        box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+        box = new Box("Connectee", NO_CONNECTOR);
         result.entries.put(new PVector(3, 4), box);
       }
     } else if (round == 4) {

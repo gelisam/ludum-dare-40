@@ -32,7 +32,14 @@ final int WHITE_DIAMOND_CONNECTOR = 3; // aggregation
 final int INTERACTIVE_MODE = 0;
 final int DISPLAYING_CONFLICTS_MODE = 1;
 final int ADMIRING_RESULTS_MODE = 2;
-final int SLIDE_MODE = 3;
+final int FIRST_SLIDE_MODE = 3;
+final int DOWN_SLIDE_IN_MODE = 3;
+final int DOWN_SLIDE_MODE = 4;
+final int DOWN_SLIDE_OUT_MODE = 5;
+final int RIGHT_SLIDE_IN_MODE = 6;
+final int RIGHT_SLIDE_MODE = 7;
+final int RIGHT_SLIDE_OUT_MODE = 8;
+final int LAST_SLIDE_MODE = 8;
 
 final int BOX_ALPHA = 128;
 
@@ -66,16 +73,19 @@ float global_t = 0.0;
 int current_scenario;
 int current_round;
 
-NamePool global_name_pool;
 ArrayList<Diagram> global_completed_diagrams;
 Diagram global_completed_diagram;
 Diagram global_source_diagram;
 Diagram global_target_diagram;
+Diagram global_next_source_diagram;
+Diagram global_next_target_diagram;
 
-Slide global_slide = new Slide("Insert Title Here");
+Slide global_slide;
 
 PFont font16;
 PFont font24;
+PFont font32;
+PFont font48;
 PImage background_image;
 PImage timeslot_image;
 PImage anchor_image;
@@ -205,6 +215,174 @@ Diagram loadRound(int scenario, int round, boolean for_real)
     }
   } else if (scenario == 2) {
     if (round == 0) {
+      if (for_real) {
+        box = new Box("Source", WHITE_ARROW_CONNECTOR);
+        box.connectors.add(new PVector(0, 2));
+        result.entries.put(new PVector(0, 0), box);
+
+        box = new Box("Target", NO_CONNECTOR);
+        result.entries.put(new PVector(0, 2), box);
+      }
+    } else if (round == 1) {
+      if (for_real) {
+        for (int j=0; j<7; ++j) {
+          blocker = new Blocker((j == 0) ? "Weekend" : "");
+          result.entries.put(new PVector(0, j), blocker);
+
+          blocker = new Blocker((j == 0) ? "Weekend" : "");
+          result.entries.put(new PVector(6, j), blocker);
+        }
+
+        blocker = new Blocker("Meeting about\npriorities");
+        result.entries.put(new PVector(2, 1), blocker);
+
+        blocker = new Blocker("Meeting about\ntech debt");
+        result.entries.put(new PVector(3, 4), blocker);
+
+        blocker = new Blocker("Meeting about\n\"Agile\"");
+        result.entries.put(new PVector(5, 6), blocker);
+
+        box = new Box("Agent", WHITE_ARROW_CONNECTOR);
+        box.connectors.add(new PVector(-1, 2));
+        box.connectors.add(new PVector(1, 2));
+        result.entries.put(new PVector(3, 2), box);
+
+        box = new Box("Server", NO_CONNECTOR);
+        result.entries.put(new PVector(2, 4), box);
+
+        box = new Box("Client", NO_CONNECTOR);
+        result.entries.put(new PVector(4, 4), box);
+      }
+    } else if (round == 2) {
+      if (for_real) {
+        for (int j=0; j<6; ++j) {
+          blocker = new Blocker((j == 0) ? "Weekend" : "");
+          result.entries.put(new PVector(0, j), blocker);
+
+          blocker = new Blocker((j == 0) ? "Weekend" : "");
+          result.entries.put(new PVector(6, j), blocker);
+
+          if (j % 2 == 0) {
+            blocker = new Blocker("Sprint planning");
+            result.entries.put(new PVector(1, j), blocker);
+          } else {
+            blocker = new Blocker("Sprint review");
+            result.entries.put(new PVector(5, j), blocker);
+          }
+        }
+
+        blocker = new Blocker("");
+        result.entries.put(new PVector(0, 6), blocker);
+
+        blocker = new Blocker("Week-long");
+        result.entries.put(new PVector(1, 6), blocker);
+
+        blocker = new Blocker("seminar");
+        result.entries.put(new PVector(2, 6), blocker);
+
+        blocker = new Blocker("about");
+        result.entries.put(new PVector(3, 6), blocker);
+
+        blocker = new Blocker("code");
+        result.entries.put(new PVector(4, 6), blocker);
+
+        blocker = new Blocker("quality");
+        result.entries.put(new PVector(5, 6), blocker);
+
+        blocker = new Blocker("");
+        result.entries.put(new PVector(6, 6), blocker);
+
+        box = new Box("Sender", WHITE_ARROW_CONNECTOR);
+        box.connectors.add(new PVector(0, 2));
+        result.entries.put(new PVector(2, 1), box);
+
+        box = new Box("Receiver", NO_CONNECTOR);
+        result.entries.put(new PVector(2, 3), box);
+      }
+    } else if (round == 3) {
+      if (for_real) {
+        for (int j=0; j<5; ++j) {
+          blocker = new Blocker((j == 0) ? "Weekend" : "");
+          result.entries.put(new PVector(0, j), blocker);
+
+          blocker = new Blocker((j == 0) ? "Weekend" : "");
+          result.entries.put(new PVector(6, j), blocker);
+
+          if (j % 2 == 0) {
+            blocker = new Blocker("Sprint planning");
+            result.entries.put(new PVector(1, j), blocker);
+          } else {
+            blocker = new Blocker("Unit tests");
+            result.entries.put(new PVector(3, j), blocker);
+
+            blocker = new Blocker("QA");
+            result.entries.put(new PVector(4, j), blocker);
+
+            blocker = new Blocker("Sprint review");
+            result.entries.put(new PVector(5, j), blocker);
+          }
+        }
+
+        blocker = new Blocker("Unit tests");
+        result.entries.put(new PVector(4, 4), blocker);
+
+        blocker = new Blocker("QA");
+        result.entries.put(new PVector(5, 4), blocker);
+
+        blocker = new Blocker("");
+        result.entries.put(new PVector(0, 5), blocker);
+
+        blocker = new Blocker("Sprint review");
+        result.entries.put(new PVector(1, 5), blocker);
+
+        blocker = new Blocker("DEADLINE");
+        result.entries.put(new PVector(2, 5), blocker);
+
+        box = new Box("Connector", WHITE_ARROW_CONNECTOR);
+        box.connectors.add(new PVector(0, 2));
+        result.entries.put(new PVector(3, 2), box);
+
+        box = new Box("Connectee", NO_CONNECTOR);
+        result.entries.put(new PVector(3, 4), box);
+      }
+    } else if (round == 4) {
+      if (for_real) {
+        for (int j=0; j<4; ++j) {
+          if (j % 2 == 0) {
+            blocker = new Blocker("Sprint planning");
+            result.entries.put(new PVector(1, j), blocker);
+          } else {
+            blocker = new Blocker("Unit tests");
+            result.entries.put(new PVector(3, j), blocker);
+
+            blocker = new Blocker("QA");
+            result.entries.put(new PVector(4, j), blocker);
+
+            blocker = new Blocker("Sprint review");
+            result.entries.put(new PVector(5, j), blocker);
+          }
+        }
+
+        blocker = new Blocker("Last minute\ntesting");
+        result.entries.put(new PVector(6, 4), blocker);
+
+        for (int j=5; j<7; ++j) {
+          for (int i=0; i<7; ++i) {
+            blocker = new Blocker("");
+            result.entries.put(new PVector(i, j), blocker);
+          }
+        }
+        blocker = new Blocker("Real\ndeadline");
+        result.entries.put(new PVector(0, 5), blocker);
+
+        box = new Box("Polish", NO_CONNECTOR);
+        result.entries.put(new PVector(5, 4), box);
+      }
+    } else {
+      return null;
+    }
+  } else if (scenario == 3) {
+    if (round == 0) {
     } else if (round == 1) {
       if (for_real) {
         blocker = new Blocker("by");
@@ -243,7 +421,6 @@ Diagram loadRound(int scenario, int round, boolean for_real)
 }
 
 void loadScenario(int scenario) {
-  global_name_pool = new NamePool();
   global_completed_diagrams = new ArrayList();
 
   current_scenario = scenario;
@@ -252,10 +429,10 @@ void loadScenario(int scenario) {
   Diagram completed_diagram = loadRound(scenario, 0, true).shrink();
   global_completed_diagrams.add(completed_diagram);
 
-  global_source_diagram = completed_diagram;
-  global_source_diagram.guess_anchor();
+  global_next_source_diagram = completed_diagram;
+  global_next_source_diagram.guess_anchor();
 
-  global_target_diagram = loadRound(scenario, 1, true);
+  global_next_target_diagram = loadRound(scenario, 1, true);
 }
 
 void setup() {
@@ -264,6 +441,8 @@ void setup() {
   stroke(0);
   font16 = loadFont("TektonPro-BoldObl-16.vlw");
   font24 = loadFont("TektonPro-BoldObl-24.vlw");
+  font32 = loadFont("TektonPro-BoldObl-32.vlw");
+  font48 = loadFont("TektonPro-BoldObl-48.vlw");
   textAlign(CENTER);
 
   background_image = loadImage("background_paper.png");
@@ -277,7 +456,15 @@ void setup() {
   refactor_button = new Button("REFACTOR", REFACTOR_BUTTON_WIDTH, REFACTOR_BUTTON_HEIGHT);
   commit_button = new Button("COMMIT", COMMIT_BUTTON_WIDTH, COMMIT_BUTTON_HEIGHT); 
 
+  // Init global slide
+  global_slide = new Slide("Insert Title Here");
+  global_slide.bullet_points.append("• First point");
+  global_slide.bullet_points.append("• Second point");
+  global_slide.bullet_points.append("• Third point");
+
   loadScenario(1);
+  global_source_diagram = global_next_source_diagram;
+  global_target_diagram = global_next_target_diagram;
 }
 
 
@@ -301,19 +488,19 @@ boolean is_flashing_red() {
 
 
 boolean can_refactor() {
-  return (global_completed_diagrams.size() > 1);
+  return (global_mode == INTERACTIVE_MODE || global_mode == ADMIRING_RESULTS_MODE) && (global_completed_diagrams.size() > 1);
 }
 
 void refactor() {
   if (can_refactor()) {
     --current_round;
 
-    global_source_diagram = global_completed_diagrams.remove(global_completed_diagrams.size() - 1);
-    global_source_diagram.guess_anchor();
+    global_next_source_diagram = global_completed_diagrams.remove(global_completed_diagrams.size() - 1);
+    global_next_source_diagram.guess_anchor();
 
-    global_target_diagram = loadRound(current_scenario, current_round, true);
+    global_next_target_diagram = loadRound(current_scenario, current_round, true);
 
-    global_mode = INTERACTIVE_MODE;
+    slide_right();
   }
 }
 
@@ -335,31 +522,39 @@ void commit() {
 
     global_completed_diagrams.add(global_completed_diagram);
 
-    global_source_diagram = global_target_diagram.simplify();
-    global_source_diagram.guess_anchor();
+    global_next_source_diagram = global_target_diagram.simplify();
+    global_next_source_diagram.guess_anchor();
 
     Diagram next_diagram = loadRound(current_scenario, current_round, true);
     if (next_diagram == null) {
       loadScenario(is_last_scenario() ? 1 : (current_scenario+1));
+      slide_right();
     } else {
-      global_target_diagram = next_diagram;
-    }
-
-    if (global_source_diagram.anchor == null) {
-      // THE END
-      global_mode = ADMIRING_RESULTS_MODE;
-    } else {
-      global_mode = INTERACTIVE_MODE;
+      global_next_target_diagram = next_diagram;
+      slide_down();
     }
   }
 }
 
-
-void show_next_slide() {
+void slide_right() {
   global_t = 0.0;
-  global_mode = SLIDE_MODE;
+  global_mode = RIGHT_SLIDE_IN_MODE;
 }
 
+void slide_down() {
+  global_t = 0.0;
+  global_mode = DOWN_SLIDE_IN_MODE;
+}
+
+void dismiss_slide() {
+  if (global_mode == RIGHT_SLIDE_MODE) {
+    global_t = 0.0;
+    global_mode = RIGHT_SLIDE_OUT_MODE;
+  } else if (global_mode == DOWN_SLIDE_MODE) {
+    global_t = 0.0;
+    global_mode = DOWN_SLIDE_OUT_MODE;
+  }
+}
 
 class Slide {
   String title;
@@ -371,8 +566,15 @@ class Slide {
 
   void draw() {
     fill(0);
-    textFont(font24, 24);
-    text(title, WINDOW_WIDTH/2, WINDOW_HEIGHT/2);
+    textFont(font48, 48);
+    text(title, WINDOW_WIDTH/2, WINDOW_HEIGHT/4);
+
+    textFont(font32, 32);
+    textAlign(LEFT);
+    for (int j=0; j<bullet_points.size(); ++j) {
+      text(bullet_points.get(j), WINDOW_WIDTH/4, WINDOW_HEIGHT/2 + j*50);
+    }
+    textAlign(CENTER);
   }
 }
 
@@ -396,9 +598,14 @@ class Region {
 }
 
 class NamePool {
-  StringList unused_names = new StringList();
+  StringList unused_names;
 
   NamePool() {
+    refill_names();
+  }
+
+  void refill_names() {
+    unused_names = new StringList();
     unused_names.append("Bank");
     unused_names.append("Account");
     unused_names.append("User");
@@ -424,6 +631,7 @@ class NamePool {
   }
 
   String next_name() {
+    if (unused_names.size() == 0) refill_names();
     return unused_names.remove(0);
   }
 }
@@ -803,7 +1011,16 @@ class Diagram {
 
     for (PVector delta : entries.keySet()) {
       Entry entry = entries.get(delta);
-      entry.draw(round(delta.x), round(delta.y));
+      if (entry instanceof Box) {
+        entry.draw(round(delta.x), round(delta.y));
+      }
+    }
+
+    for (PVector delta : entries.keySet()) {
+      Entry entry = entries.get(delta);
+      if (entry instanceof Blocker) {
+        entry.draw(round(delta.x), round(delta.y));
+      }
     }
   }
 }
@@ -856,24 +1073,44 @@ void draw() {
     global_source_diagram.clear_conflict_markers();
     global_target_diagram.clear_conflict_markers();
     global_mode = INTERACTIVE_MODE;
-  } else if (global_mode == SLIDE_MODE && global_t > 3) {
+  } else if (global_mode == DOWN_SLIDE_IN_MODE && global_t > 0.25) {
+    global_source_diagram = global_next_source_diagram;
+    global_target_diagram = global_next_target_diagram;
+    global_mode = DOWN_SLIDE_MODE;
+  } else if (global_mode == RIGHT_SLIDE_IN_MODE && global_t > 0.25) {
+    global_source_diagram = global_next_source_diagram;
+    global_target_diagram = global_next_target_diagram;
+    global_mode = RIGHT_SLIDE_MODE;
+  } else if (global_mode == DOWN_SLIDE_OUT_MODE && global_t > 0.25) {
     global_mode = INTERACTIVE_MODE;
+  } else if (global_mode == RIGHT_SLIDE_OUT_MODE && global_t > 0.25) {
+    if (global_source_diagram.anchor == null) {
+      // THE END
+      global_mode = ADMIRING_RESULTS_MODE;
+    } else {
+      global_mode = INTERACTIVE_MODE;
+    }
   }
 
 
   // DRAW
 
-  image(background_image, 0, 0);
+  background(background_image);
   pushMatrix();
 
-  if (global_mode == SLIDE_MODE) {
-    if (global_t < 1.0) {
-      translate(0, -global_t * WINDOW_HEIGHT);
-    } else if (global_t < 2) {
-      translate(0, -WINDOW_HEIGHT);
-    } else {
-      translate(0, WINDOW_HEIGHT -(global_t-2)*WINDOW_HEIGHT);
-    }
+  float frac = global_t / 0.25;
+  if (global_mode == DOWN_SLIDE_IN_MODE) {
+    translate(0, -frac * WINDOW_HEIGHT);
+  } else if (global_mode == DOWN_SLIDE_MODE) {
+    translate(0, -WINDOW_HEIGHT);
+  } else if (global_mode == DOWN_SLIDE_OUT_MODE) {
+    translate(0, WINDOW_HEIGHT -frac*WINDOW_HEIGHT);
+  } else if (global_mode == RIGHT_SLIDE_IN_MODE) {
+    translate(-frac*WINDOW_WIDTH, 0);
+  } else if (global_mode == RIGHT_SLIDE_MODE) {
+    translate(-WINDOW_WIDTH, 0);
+  } else if (global_mode == RIGHT_SLIDE_OUT_MODE) {
+    translate(WINDOW_WIDTH -frac*WINDOW_WIDTH, 0);
   }
 
   translate(SOURCE_CALENDAR_X, SOURCE_CALENDAR_Y); // pushMatrix()
@@ -905,13 +1142,23 @@ void draw() {
   text( "WORK IN PROGRESS - WEEK "+current_round, TARGET_CALENDAR_X, (SOURCE_CALENDAR_Y/2)-5, 
     TIMESLOT_WIDTH*7, (SOURCE_CALENDAR_Y/2)+10);
 
-  translate(0, WINDOW_HEIGHT); // pushMatrix()
-  global_slide.draw();
-  translate(0, -WINDOW_HEIGHT); // popMatrix()
+  if (global_mode >= FIRST_SLIDE_MODE && global_mode <= LAST_SLIDE_MODE) {
+    pushMatrix();
 
-  translate(0, -WINDOW_HEIGHT); // pushMatrix()
-  global_slide.draw();
-  translate(0, WINDOW_HEIGHT); // popMatrix()
+    if (global_mode == DOWN_SLIDE_IN_MODE || global_mode == DOWN_SLIDE_MODE) {
+      translate(0, WINDOW_HEIGHT);
+    } else if (global_mode == DOWN_SLIDE_OUT_MODE) {
+      translate(0, -WINDOW_HEIGHT);
+    } else if (global_mode == RIGHT_SLIDE_IN_MODE || global_mode == RIGHT_SLIDE_MODE) {
+      translate(WINDOW_WIDTH, 0);
+    } else if (global_mode == RIGHT_SLIDE_OUT_MODE) {
+      translate(-WINDOW_WIDTH, 0);
+    }
+
+    global_slide.draw();
+
+    popMatrix();
+  }
 
   popMatrix();
 
@@ -981,6 +1228,8 @@ void mouseReleased() {
         }
       }
     }
+  } else if (global_mode == DOWN_SLIDE_MODE || global_mode == RIGHT_SLIDE_MODE) {
+    dismiss_slide();
   }
 }
 
@@ -1015,13 +1264,13 @@ void mouseMoved() {
 }
 
 void keyPressed() {
-  if (global_mode == INTERACTIVE_MODE || global_mode == ADMIRING_RESULTS_MODE) {
+  if (global_mode == DOWN_SLIDE_MODE || global_mode == RIGHT_SLIDE_MODE) {
+    dismiss_slide();
+  } else {
     if (keyCode == LEFT || keyCode == UP) {
       refactor();
     } else if (keyCode == RIGHT || keyCode == DOWN || keyCode == ENTER || key == ' ') {
       commit();
-    } else if (key == 's') {
-      show_next_slide();
     }
   }
 }

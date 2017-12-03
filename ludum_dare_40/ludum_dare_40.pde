@@ -1016,11 +1016,11 @@ void mouseMoved() {
 
 void keyPressed() {
   if (global_mode == INTERACTIVE_MODE || global_mode == ADMIRING_RESULTS_MODE) {
-    if (keyCode == LEFT) {
+    if (keyCode == LEFT || keyCode == UP) {
       refactor();
-    } else if (keyCode == RIGHT) {
+    } else if (keyCode == RIGHT || keyCode == DOWN || keyCode == ENTER || key == ' ') {
       commit();
-    } else if (keyCode == DOWN) {
+    } else if (key == 's') {
       show_next_slide();
     }
   }

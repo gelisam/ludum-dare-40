@@ -122,8 +122,13 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       }
     } else if (round == 1) {
       if (for_real) {
-        global_slide = new Slide("Insert Title Here");
-        global_slide.bullet_points.append("• Round 1");
+        global_slide = new Slide("Scenario 1 - Tutorial");
+        global_slide.bullet_points.append("• Click one UML class from \"code complete\"");
+        global_slide.bullet_points.append("• Match to a UML class from \"work in progress\"");
+        global_slide.bullet_points.append("• Symbols on both classes must match");
+        global_slide.bullet_points.append("• No other class may overlap");
+        global_slide.bullet_points.append("• Commit your work when done");
+        global_slide.bullet_points.append("• Don't forget to breathe!");
 
 
         box = new Box("Librarian", WHITE_ARROW_CONNECTOR);
@@ -135,8 +140,9 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       }
     } else if (round == 2) {
       if (for_real) {
-        global_slide = new Slide("Insert Title Here");
-        global_slide.bullet_points.append("• Round 2");
+        global_slide = new Slide("Scenario 1 - Phase 2");
+        global_slide.bullet_points.append("• If you can't resolve code conflicts, you may need to refactor");
+        global_slide.bullet_points.append("• Always research thoroughly"); // TODO: improve joke
 
 
         box = new Box("Dating Sim", BLACK_DIAMOND_CONNECTOR);
@@ -150,8 +156,8 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       }
     } else if (round == 3) {
       if (for_real) {
-        global_slide = new Slide("Insert Title Here");
-        global_slide.bullet_points.append("• Round 3");
+        global_slide = new Slide("Scenario 1 - Phase 3");
+        global_slide.bullet_points.append("• New corporate priority: Movie Catalog");
 
 
         box = new Box("Horror", WHITE_ARROW_CONNECTOR);
@@ -171,10 +177,8 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       }
     } else if (round == 4) {
       if (for_real) {
-        global_slide = new Slide("Insert Title Here");
-        global_slide.bullet_points.append("• First point");
-        global_slide.bullet_points.append("• Second point");
-        global_slide.bullet_points.append("• Third point");
+        global_slide = new Slide("Scenario 1 - Phase 4");
+        global_slide.bullet_points.append("• New corporate priority: House Appraisal Database");
 
 
         box = new Box("HouseType", WHITE_ARROW_CONNECTOR);
@@ -199,10 +203,9 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       }
     } else if (round == 5) {
       if (for_real) {
-        global_slide = new Slide("Insert Title Here");
-        global_slide.bullet_points.append("• First point");
-        global_slide.bullet_points.append("• Second point");
-        global_slide.bullet_points.append("• Third point");
+        global_slide = new Slide("Scenario 1 - Final Phase");
+        global_slide.bullet_points.append("• New corporate policy: no naps!");
+        global_slide.bullet_points.append("• Remember the company's moto: red, green, refactor, refactor, refactor");
 
 
         box = new Box("Clown", NO_CONNECTOR);
@@ -254,7 +257,7 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       }
     } else if (round == 1) {
       if (for_real) {
-        global_slide = new Slide("Insert Title Here");
+        global_slide = new Slide("Congratulations on finishing the tutorial!");
         global_slide.bullet_points.append("• First point");
         global_slide.bullet_points.append("• Second point");
         global_slide.bullet_points.append("• Third point");

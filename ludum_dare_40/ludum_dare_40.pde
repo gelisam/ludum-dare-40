@@ -66,7 +66,7 @@ float global_t = 0.0;
 int current_scenario;
 int current_round;
 
-NamePool global_name_pool;
+NamePool global_name_pool = new NamePool();
 ArrayList<Diagram> global_completed_diagrams;
 Diagram global_completed_diagram;
 Diagram global_source_diagram;
@@ -243,7 +243,6 @@ Diagram loadRound(int scenario, int round, boolean for_real)
 }
 
 void loadScenario(int scenario) {
-  global_name_pool = new NamePool();
   global_completed_diagrams = new ArrayList();
 
   current_scenario = scenario;
@@ -396,9 +395,14 @@ class Region {
 }
 
 class NamePool {
-  StringList unused_names = new StringList();
+  StringList unused_names;
 
   NamePool() {
+    refill_names();
+  }
+
+  void refill_names() {
+    unused_names = new StringList();
     unused_names.append("Bank");
     unused_names.append("Account");
     unused_names.append("User");
@@ -424,6 +428,7 @@ class NamePool {
   }
 
   String next_name() {
+    if (unused_names.size() == 0) refill_names();
     return unused_names.remove(0);
   }
 }

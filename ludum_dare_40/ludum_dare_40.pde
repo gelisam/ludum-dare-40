@@ -172,7 +172,7 @@ boolean is_flashing_red() {
 
 
 boolean can_refactor() {
-  return !global_completed_diagrams.isEmpty();
+  return (global_completed_diagrams.size() > 1);
 }
 
 void refactor() {

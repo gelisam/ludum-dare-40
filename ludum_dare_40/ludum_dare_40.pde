@@ -54,8 +54,8 @@ int global_mode = 0;
 float global_t = 0.0;
 
 final NamePool global_name_pool = new NamePool();
-Calendar global_source_calendar;
-Calendar global_target_calendar;
+Diagram global_source_diagram;
+Diagram global_target_diagram;
 
 PFont font;
 PImage background_image;
@@ -83,36 +83,36 @@ void setup() {
   Box box;
   Blocker blocker;
 
-  // Init source calendar
-  global_source_calendar = new Calendar(1, 2);
+  // Init source diagram
+  global_source_diagram = new Diagram(1, 2);
 
   // Init source entries
   box = new Box(global_name_pool.next_name(), BLACK_DIAMOND_CONNECTOR);
   box.connectors.add(new PVector(0, 1));
-  global_source_calendar.diagram.entries.put(new PVector(0, 0), box);
+  global_source_diagram.entries.put(new PVector(0, 0), box);
 
   box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
-  global_source_calendar.diagram.entries.put(new PVector(0, 1), box);
+  global_source_diagram.entries.put(new PVector(0, 1), box);
 
-  global_source_calendar.guess_anchor();
+  global_source_diagram.guess_anchor();
 
-  // Init target calendar
-  global_target_calendar = new Calendar(7, 7);
+  // Init target diagram
+  global_target_diagram = new Diagram(7, 7);
 
   // Init target entries
   box = new Box(global_name_pool.next_name(), WHITE_ARROW_CONNECTOR);
   box.connectors.add(new PVector(0, 1));
   box.connectors.add(new PVector(1, 1));
-  global_target_calendar.diagram.entries.put(new PVector(1, 1), box);
+  global_target_diagram.entries.put(new PVector(1, 1), box);
 
   box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
-  global_target_calendar.diagram.entries.put(new PVector(1, 2), box);
+  global_target_diagram.entries.put(new PVector(1, 2), box);
 
   box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
-  global_target_calendar.diagram.entries.put(new PVector(2, 2), box);
+  global_target_diagram.entries.put(new PVector(2, 2), box);
 
   blocker = new Blocker("meeting");
-  global_target_calendar.diagram.entries.put(new PVector(2, 3), blocker);
+  global_target_diagram.entries.put(new PVector(2, 3), blocker);
 }
 
 
@@ -398,7 +398,7 @@ class Blocker extends Entry {
     }
     fill(243, 228, 59);
     rect(x, y, TIMESLOT_WIDTH, TIMESLOT_HEIGHT);
-    
+
     if (conflicting && is_flashing_red()) {
       fill(255, 0, 0);
     } else {
@@ -410,18 +410,40 @@ class Blocker extends Entry {
 
 class Diagram {
   HashMap<PVector, Entry> entries = new HashMap<PVector, Entry>();
+  int w;
+  int h;
+  PVector anchor = null;
+  PVector hover = null;
+  PVector conflicting_timeslot = null;
+  Region region;
+  Region non_conflicting_region = null;
 
-  PVector guess_anchor() {
+  Diagram(int w_, int h_) {
+    w = w_;
+    h = h_;
+    region = new Region(new PVector(0, 0), new PVector(w-1, h-1));
+  }
+
+  void guess_anchor() {
     for (PVector delta : entries.keySet()) {
-      return delta;
+      anchor = delta;
+      return;
     }
+  }
 
-    return null;
+  void clear_conflict_markers() {
+    conflicting_timeslot = null;
+    non_conflicting_region = null;
+
+    for (PVector delta : entries.keySet()) {
+      Entry entry = entries.get(delta);
+      entry.clear_conflict_markers();
+    }
   }
 
   // in case of conflict, conflict markers are added and null is returned.
   Diagram merge(PVector anchor, Diagram other, PVector other_anchor) {
-    Diagram result = new Diagram();
+    Diagram result = new Diagram(w, h);
     boolean conflicting = false;
 
     Entry anchor_entry = entries.get(anchor);
@@ -461,53 +483,11 @@ class Diagram {
     }
   }
 
-  void clear_conflict_markers() {
-    for (PVector delta : entries.keySet()) {
-      Entry entry = entries.get(delta);
-      entry.clear_conflict_markers();
-    }
-  }
-
   void draw_anchor(int i, int j) {
     float r = 40;
     stroke(255, 0, 0);
     noFill();
     ellipse(i*TIMESLOT_WIDTH+TIMESLOT_WIDTH/2, j*TIMESLOT_HEIGHT+TIMESLOT_HEIGHT/2, 2*r, 2*r);
-  }
-
-  void draw(int i, int j) {
-    for (PVector delta : entries.keySet()) {
-      Entry entry = entries.get(delta);
-      entry.draw(i+round(delta.x), j+round(delta.y));
-    }
-  }
-}
-
-class Calendar {
-  int w;
-  int h;
-  Diagram diagram;
-  PVector anchor = null;
-  PVector hover = null;
-  PVector conflicting_timeslot = null;
-  Region region;
-  Region non_conflicting_region = null;
-
-  Calendar(int w_, int h_) {
-    w = w_;
-    h = h_;
-    diagram = new Diagram();
-    region = new Region(new PVector(0, 0), new PVector(w-1, h-1));
-  }
-
-  void guess_anchor() {
-    anchor = diagram.guess_anchor();
-  }
-
-  void clear_conflict_markers() {
-    conflicting_timeslot = null;
-    non_conflicting_region = null;
-    diagram.clear_conflict_markers();
   }
 
   void draw_grid(int w, int h) {
@@ -527,7 +507,11 @@ class Calendar {
 
   void draw() {
     draw_grid(w, h);
-    diagram.draw(0, 0);
+
+    for (PVector delta : entries.keySet()) {
+      Entry entry = entries.get(delta);
+      entry.draw(round(delta.x), round(delta.y));
+    }
   }
 }
 
@@ -537,8 +521,8 @@ void draw() {
   global_t += 1.0/60; // assumes 60fps
 
   if (global_mode == DISPLAYING_CONFLICTS_MODE && global_t > 0.5) {
-    global_source_calendar.clear_conflict_markers();
-    global_target_calendar.clear_conflict_markers();
+    global_source_diagram.clear_conflict_markers();
+    global_target_diagram.clear_conflict_markers();
     global_mode = INTERACTIVE_MODE;
   }
 
@@ -549,11 +533,11 @@ void draw() {
   pushMatrix();
 
   translate(SOURCE_CALENDAR_X, SOURCE_CALENDAR_Y); // pushMatrix()
-  global_source_calendar.draw();
+  global_source_diagram.draw();
   translate(-SOURCE_CALENDAR_X, -SOURCE_CALENDAR_Y); // popMatrix()
 
   translate(TARGET_CALENDAR_X, TARGET_CALENDAR_Y); // pushMatrix()
-  global_target_calendar.draw();
+  global_target_diagram.draw();
   translate(-TARGET_CALENDAR_X, -TARGET_CALENDAR_Y); // popMatrix()
 
   popMatrix();
@@ -565,42 +549,42 @@ void draw() {
 void mouseReleased() {
   if (global_mode == INTERACTIVE_MODE) {
     if (mouseX < TARGET_CALENDAR_X) {
-      // click on source calendar?
+      // click on source diagram?
 
-      if (global_source_calendar.hover != null) {
-        global_source_calendar.anchor = global_source_calendar.hover;
+      if (global_source_diagram.hover != null) {
+        global_source_diagram.anchor = global_source_diagram.hover;
       }
     } else {
-      // click on target calendar?
+      // click on target diagram?
 
-      if (global_target_calendar.hover != null) {
+      if (global_target_diagram.hover != null) {
         boolean conflicting = false;
 
-        Entry target_anchor_entry = global_target_calendar.diagram.entries.get(global_target_calendar.hover);
+        Entry target_anchor_entry = global_target_diagram.entries.get(global_target_diagram.hover);
         if (target_anchor_entry == null) {
           conflicting = true;
-          global_target_calendar.conflicting_timeslot = global_target_calendar.hover;
+          global_target_diagram.conflicting_timeslot = global_target_diagram.hover;
         } else if (!(target_anchor_entry instanceof Box)) {
           conflicting = true;
           target_anchor_entry.conflicting = true;
         }
 
-        PVector anchor_delta = PVector.sub(global_source_calendar.anchor, global_target_calendar.hover);
-        Region non_conflicting_region = new Region(anchor_delta, PVector.add(anchor_delta, new PVector(global_target_calendar.w-1, global_target_calendar.h-1)));
-        if (!non_conflicting_region.contains_smaller_region(global_source_calendar.region)) {
+        PVector anchor_delta = PVector.sub(global_source_diagram.anchor, global_target_diagram.hover);
+        Region non_conflicting_region = new Region(anchor_delta, PVector.add(anchor_delta, new PVector(global_target_diagram.w-1, global_target_diagram.h-1)));
+        if (!non_conflicting_region.contains_smaller_region(global_source_diagram.region)) {
           conflicting = true;
-          global_source_calendar.non_conflicting_region = non_conflicting_region;
+          global_source_diagram.non_conflicting_region = non_conflicting_region;
         }
 
         if (conflicting) {
           display_conflicts();
         } else {
-          Diagram result = global_target_calendar.diagram.merge(global_target_calendar.hover, global_source_calendar.diagram, global_source_calendar.anchor);
+          Diagram result = global_target_diagram.merge(global_target_diagram.hover, global_source_diagram, global_source_diagram.anchor);
           if (result == null) {
             display_conflicts();
           } else {
-            global_target_calendar.anchor = global_target_calendar.hover;
-            global_target_calendar.diagram = result;
+            global_target_diagram.anchor = global_target_diagram.hover;
+            global_target_diagram = result;
           }
         }
       }
@@ -610,28 +594,28 @@ void mouseReleased() {
 
 void mouseMoved() {
   if (mouseX < TARGET_CALENDAR_X) {
-    // hover over source calendar?
+    // hover over source diagram?
 
     float x = mouseX - SOURCE_CALENDAR_X;
     float y = mouseY - SOURCE_CALENDAR_Y;
     int i = floor(x / TIMESLOT_WIDTH);
     int j = floor(y / TIMESLOT_HEIGHT);
-    if (i >= 0 && i < global_source_calendar.w && j >= 0 && j < global_source_calendar.h) {
-      global_source_calendar.hover = new PVector(i, j);
+    if (i >= 0 && i < global_source_diagram.w && j >= 0 && j < global_source_diagram.h) {
+      global_source_diagram.hover = new PVector(i, j);
     } else {
-      global_source_calendar.hover = null;
+      global_source_diagram.hover = null;
     }
   } else {
-    // hover over target calendar?
+    // hover over target diagram?
 
     float x = mouseX - TARGET_CALENDAR_X;
     float y = mouseY - TARGET_CALENDAR_Y;
     int i = floor(x / TIMESLOT_WIDTH);
     int j = floor(y / TIMESLOT_HEIGHT);
-    if (i >= 0 && i < global_target_calendar.w && j >= 0 && j < global_target_calendar.h) {
-      global_target_calendar.hover = new PVector(i, j);
+    if (i >= 0 && i < global_target_diagram.w && j >= 0 && j < global_target_diagram.h) {
+      global_target_diagram.hover = new PVector(i, j);
     } else {
-      global_target_calendar.hover = null;
+      global_target_diagram.hover = null;
     }
   }
 }

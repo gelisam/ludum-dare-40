@@ -32,7 +32,14 @@ final int WHITE_DIAMOND_CONNECTOR = 3; // aggregation
 final int INTERACTIVE_MODE = 0;
 final int DISPLAYING_CONFLICTS_MODE = 1;
 final int ADMIRING_RESULTS_MODE = 2;
-final int SLIDE_MODE = 3;
+final int FIRST_SLIDE_MODE = 3;
+final int VERTICAL_SLIDE_IN_MODE = 3;
+final int VERTICAL_SLIDE_MODE = 4;
+final int VERTICAL_SLIDE_OUT_MODE = 5;
+final int HORIZONTAL_SLIDE_IN_MODE = 6;
+final int HORIZONTAL_SLIDE_MODE = 7;
+final int HORIZONTAL_SLIDE_OUT_MODE = 8;
+final int LAST_SLIDE_MODE = 8;
 
 final int BOX_ALPHA = 128;
 
@@ -477,7 +484,7 @@ boolean is_flashing_red() {
 
 
 boolean can_refactor() {
-  return (global_completed_diagrams.size() > 1);
+  return (global_mode == INTERACTIVE_MODE || global_mode == ADMIRING_RESULTS_MODE) && (global_completed_diagrams.size() > 1);
 }
 
 void refactor() {
@@ -517,25 +524,33 @@ void commit() {
     Diagram next_diagram = loadRound(current_scenario, current_round, true);
     if (next_diagram == null) {
       loadScenario(is_last_scenario() ? 1 : (current_scenario+1));
+      show_next_horizontal_slide();
     } else {
       global_target_diagram = next_diagram;
-    }
-
-    if (global_source_diagram.anchor == null) {
-      // THE END
-      global_mode = ADMIRING_RESULTS_MODE;
-    } else {
-      global_mode = INTERACTIVE_MODE;
+      show_next_vertical_slide();
     }
   }
 }
 
-
-void show_next_slide() {
+void show_next_horizontal_slide() {
   global_t = 0.0;
-  global_mode = SLIDE_MODE;
+  global_mode = HORIZONTAL_SLIDE_IN_MODE;
 }
 
+void show_next_vertical_slide() {
+  global_t = 0.0;
+  global_mode = VERTICAL_SLIDE_IN_MODE;
+}
+
+void dismiss_slide() {
+  if (global_mode == HORIZONTAL_SLIDE_MODE) {
+    global_t = 0.0;
+    global_mode = HORIZONTAL_SLIDE_OUT_MODE;
+  } else if (global_mode == VERTICAL_SLIDE_MODE) {
+    global_t = 0.0;
+    global_mode = VERTICAL_SLIDE_OUT_MODE;
+  }
+}
 
 class Slide {
   String title;
@@ -1045,8 +1060,19 @@ void draw() {
     global_source_diagram.clear_conflict_markers();
     global_target_diagram.clear_conflict_markers();
     global_mode = INTERACTIVE_MODE;
-  } else if (global_mode == SLIDE_MODE && global_t > 3) {
+  } else if (global_mode == VERTICAL_SLIDE_IN_MODE && global_t > 0.25) {
+    global_mode = VERTICAL_SLIDE_MODE;
+  } else if (global_mode == HORIZONTAL_SLIDE_IN_MODE && global_t > 0.25) {
+    global_mode = HORIZONTAL_SLIDE_MODE;
+  } else if (global_mode == VERTICAL_SLIDE_OUT_MODE && global_t > 0.25) {
     global_mode = INTERACTIVE_MODE;
+  } else if (global_mode == HORIZONTAL_SLIDE_OUT_MODE && global_t > 0.25) {
+    if (global_source_diagram.anchor == null) {
+      // THE END
+      global_mode = ADMIRING_RESULTS_MODE;
+    } else {
+      global_mode = INTERACTIVE_MODE;
+    }
   }
 
 
@@ -1055,16 +1081,19 @@ void draw() {
   background(background_image);
   pushMatrix();
 
-  if (global_mode == SLIDE_MODE) {
-    if (global_t < 0.25) {
-      float frac = global_t / 0.25;
-      translate(0, -frac * WINDOW_HEIGHT);
-    } else if (global_t < 2.75) {
-      translate(0, -WINDOW_HEIGHT);
-    } else {
-      float frac = (global_t-2.75) / 0.25;
-      translate(0, WINDOW_HEIGHT -frac*WINDOW_HEIGHT);
-    }
+  float frac = global_t / 0.25;
+  if (global_mode == VERTICAL_SLIDE_IN_MODE) {
+    translate(0, -frac * WINDOW_HEIGHT);
+  } else if (global_mode == VERTICAL_SLIDE_MODE) {
+    translate(0, -WINDOW_HEIGHT);
+  } else if (global_mode == VERTICAL_SLIDE_OUT_MODE) {
+    translate(0, WINDOW_HEIGHT -frac*WINDOW_HEIGHT);
+  } else if (global_mode == HORIZONTAL_SLIDE_IN_MODE) {
+    translate(-frac*WINDOW_WIDTH, 0);
+  } else if (global_mode == HORIZONTAL_SLIDE_MODE) {
+    translate(-WINDOW_WIDTH, 0);
+  } else if (global_mode == HORIZONTAL_SLIDE_OUT_MODE) {
+    translate(WINDOW_WIDTH -frac*WINDOW_WIDTH, 0);
   }
 
   translate(SOURCE_CALENDAR_X, SOURCE_CALENDAR_Y); // pushMatrix()
@@ -1096,13 +1125,23 @@ void draw() {
   text( "WORK IN PROGRESS - WEEK "+current_round, TARGET_CALENDAR_X, (SOURCE_CALENDAR_Y/2)-5, 
     TIMESLOT_WIDTH*7, (SOURCE_CALENDAR_Y/2)+10);
 
-  translate(0, WINDOW_HEIGHT); // pushMatrix()
-  global_slide.draw();
-  translate(0, -WINDOW_HEIGHT); // popMatrix()
+  if (global_mode >= FIRST_SLIDE_MODE && global_mode <= LAST_SLIDE_MODE) {
+    pushMatrix();
 
-  translate(0, -WINDOW_HEIGHT); // pushMatrix()
-  global_slide.draw();
-  translate(0, WINDOW_HEIGHT); // popMatrix()
+    if (global_mode == VERTICAL_SLIDE_IN_MODE || global_mode == VERTICAL_SLIDE_MODE) {
+      translate(0, WINDOW_HEIGHT);
+    } else if (global_mode == VERTICAL_SLIDE_OUT_MODE) {
+      translate(0, -WINDOW_HEIGHT);
+    } else if (global_mode == HORIZONTAL_SLIDE_IN_MODE || global_mode == HORIZONTAL_SLIDE_MODE) {
+      translate(WINDOW_WIDTH, 0);
+    } else if (global_mode == HORIZONTAL_SLIDE_OUT_MODE) {
+      translate(-WINDOW_WIDTH, 0);
+    }
+
+    global_slide.draw();
+
+    popMatrix();
+  }
 
   popMatrix();
 
@@ -1172,6 +1211,8 @@ void mouseReleased() {
         }
       }
     }
+  } else if (global_mode == VERTICAL_SLIDE_MODE || global_mode == HORIZONTAL_SLIDE_MODE) {
+    dismiss_slide();
   }
 }
 
@@ -1206,13 +1247,13 @@ void mouseMoved() {
 }
 
 void keyPressed() {
-  if (global_mode == INTERACTIVE_MODE || global_mode == ADMIRING_RESULTS_MODE) {
+  if (global_mode == VERTICAL_SLIDE_MODE || global_mode == HORIZONTAL_SLIDE_MODE) {
+    dismiss_slide();
+  } else {
     if (keyCode == LEFT || keyCode == UP) {
       refactor();
     } else if (keyCode == RIGHT || keyCode == DOWN || keyCode == ENTER || key == ' ') {
       commit();
-    } else if (key == 's') {
-      show_next_slide();
     }
   }
 }

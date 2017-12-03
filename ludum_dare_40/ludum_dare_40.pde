@@ -1057,12 +1057,14 @@ void draw() {
   pushMatrix();
 
   if (global_mode == SLIDE_MODE) {
-    if (global_t < 1.0) {
-      translate(0, -global_t * WINDOW_HEIGHT);
-    } else if (global_t < 2) {
+    if (global_t < 0.25) {
+      float frac = global_t / 0.25;
+      translate(0, -frac * WINDOW_HEIGHT);
+    } else if (global_t < 2.75) {
       translate(0, -WINDOW_HEIGHT);
     } else {
-      translate(0, WINDOW_HEIGHT -(global_t-2)*WINDOW_HEIGHT);
+      float frac = (global_t-2.75) / 0.25;
+      translate(0, WINDOW_HEIGHT -frac*WINDOW_HEIGHT);
     }
   }
 

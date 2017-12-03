@@ -10,9 +10,9 @@ final int CLASS_DX = (TIMESLOT_WIDTH - CLASS_WIDTH) / 2;
 final int CLASS_DY = (TIMESLOT_HEIGHT - CLASS_HEIGHT) / 2;
 final int CALENDAR_GAP = 150;
 final int SOURCE_CALENDAR_X = 20; //65;
-final int SOURCE_CALENDAR_Y = 45;
+final int SOURCE_CALENDAR_Y = 85;
 final int TARGET_CALENDAR_X = 556; //502;
-final int TARGET_CALENDAR_Y = 45;
+final int TARGET_CALENDAR_Y = 85;
 final int REFACTOR_BUTTON_WIDTH = 236;
 final int REFACTOR_BUTTON_HEIGHT = 80;
 final int REFACTOR_BUTTON_X = SOURCE_CALENDAR_X;
@@ -668,12 +668,6 @@ class Slide {
   void draw() {
     if (image != null) {
       image(image, 0, 0);
-
-      if (next_slide != null) {
-        translate(WINDOW_WIDTH, 0); // pushMatrix()
-        next_slide.draw();
-        translate(-WINDOW_WIDTH, 0); // popMatrix()
-      }
     } else {
       fill(0);
       textFont(font48, 48);
@@ -685,6 +679,12 @@ class Slide {
         text(bullet_points.get(j), WINDOW_WIDTH/4, WINDOW_HEIGHT/2 + j*50);
       }
       textAlign(CENTER);
+    }
+
+    if (next_slide != null) {
+      translate(WINDOW_WIDTH, 0); // pushMatrix()
+      next_slide.draw();
+      translate(-WINDOW_WIDTH, 0); // popMatrix()
     }
   }
 }
@@ -1260,7 +1260,7 @@ void draw() {
     translate(frac*WINDOW_WIDTH - WINDOW_WIDTH, 0);
   }
 
-  if (global_slide == null || global_slide.next_slide == null) {
+  if (global_mode == RIGHT_SLIDE_IN_MODE || global_slide == null || global_slide.next_slide == null) {
     translate(SOURCE_CALENDAR_X, SOURCE_CALENDAR_Y); // pushMatrix()
     global_source_diagram.draw();
     translate(-SOURCE_CALENDAR_X, -SOURCE_CALENDAR_Y); // popMatrix()
@@ -1283,11 +1283,19 @@ void draw() {
     fill(0);
     rect(TARGET_CALENDAR_X-23, TARGET_CALENDAR_Y, 11, TIMESLOT_HEIGHT*7);
 
-    fill(39, 58, 87); //fill(78, 115, 172);
     textFont(font24, 24);
-    text( "CODE COMPLETE", SOURCE_CALENDAR_X, (SOURCE_CALENDAR_Y/2)-5, 
+    text("Sun", TARGET_CALENDAR_X+0.5*TIMESLOT_WIDTH, TARGET_CALENDAR_Y-10);
+    text("Mon", TARGET_CALENDAR_X+1.5*TIMESLOT_WIDTH, TARGET_CALENDAR_Y-10);
+    text("Tue", TARGET_CALENDAR_X+2.5*TIMESLOT_WIDTH, TARGET_CALENDAR_Y-10);
+    text("Wed", TARGET_CALENDAR_X+3.5*TIMESLOT_WIDTH, TARGET_CALENDAR_Y-10);
+    text("Thu", TARGET_CALENDAR_X+4.5*TIMESLOT_WIDTH, TARGET_CALENDAR_Y-10);
+    text("Fri", TARGET_CALENDAR_X+5.5*TIMESLOT_WIDTH, TARGET_CALENDAR_Y-10);
+    text("Sat", TARGET_CALENDAR_X+6.5*TIMESLOT_WIDTH, TARGET_CALENDAR_Y-10);
+
+    fill(39, 58, 87); //fill(78, 115, 172);
+    text( "CODE COMPLETE", SOURCE_CALENDAR_X, SOURCE_CALENDAR_Y-70, 
       TIMESLOT_WIDTH*5, (SOURCE_CALENDAR_Y/2)+10);
-    text( "WORK IN PROGRESS - WEEK "+current_round, TARGET_CALENDAR_X, (SOURCE_CALENDAR_Y/2)-5, 
+    text( "WORK IN PROGRESS - PHASE "+current_round, TARGET_CALENDAR_X, TARGET_CALENDAR_Y-70, 
       TIMESLOT_WIDTH*7, (SOURCE_CALENDAR_Y/2)+10);
   }
 

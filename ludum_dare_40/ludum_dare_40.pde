@@ -157,6 +157,38 @@ Diagram loadRound(int scenario, int round, boolean for_real)
     } else {
       return null;
     }
+  } else {
+    if (round == 0) {
+    } else if (round == 1) {
+      if (for_real) {
+        blocker = new Blocker("by");
+        result.entries.put(new PVector(1, 2), blocker);
+        blocker = new Blocker("Michaelson\nBritt");
+        result.entries.put(new PVector(2, 2), blocker);
+
+        blocker = new Blocker("and");
+        result.entries.put(new PVector(1, 4), blocker);
+        blocker = new Blocker("Samuel\nGélineau");
+        result.entries.put(new PVector(2, 4), blocker);
+
+        blocker = new Blocker("CRUNCH TIME");
+        result.entries.put(new PVector(4, 0), blocker);
+        blocker = new Blocker("Made in 48h");
+        result.entries.put(new PVector(5, 1), blocker);
+        blocker = new Blocker("for\nLudum Dare 40");
+        result.entries.put(new PVector(5, 2), blocker);
+        blocker = new Blocker("");
+        result.entries.put(new PVector(5, 3), blocker);
+        blocker = new Blocker("the theme was");
+        result.entries.put(new PVector(5, 4), blocker);
+        blocker = new Blocker("The more\nyou have");
+        result.entries.put(new PVector(5, 5), blocker);
+        blocker = new Blocker("the worse\nit is");
+        result.entries.put(new PVector(4, 6), blocker);
+      }
+    } else {
+      return null;
+    }
   }
 
   return result;
@@ -539,6 +571,7 @@ class Blocker extends Entry {
     } else {
       fill(0);
     }
+    textFont(font16, 16);
     text(flavor_text, x+TIMESLOT_WIDTH/2, y+TIMESLOT_HEIGHT/2);
   }
 }

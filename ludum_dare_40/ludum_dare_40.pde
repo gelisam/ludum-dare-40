@@ -125,13 +125,13 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       if (for_real) {
         global_slide = new Slide("");
         global_slide.image = title_image;
-        //global_slide = new Slide("Scenario 1 - Tutorial");
-        //global_slide.bullet_points.append("• Click one UML class from \"code complete\"");
-        //global_slide.bullet_points.append("• Match to a UML class from \"work in progress\"");
-        //global_slide.bullet_points.append("• Symbols on both classes must match");
-        //global_slide.bullet_points.append("• No other class may overlap");
-        //global_slide.bullet_points.append("• Commit your work when done");
-        //global_slide.bullet_points.append("• Don't forget to breathe!");
+        global_slide.next_slide = new Slide("Scenario 1 - Tutorial");
+        global_slide.next_slide.bullet_points.append("• Click one UML class from \"code complete\"");
+        global_slide.next_slide.bullet_points.append("• Match to a UML class from \"work in progress\"");
+        global_slide.next_slide.bullet_points.append("• Symbols on both classes must match");
+        global_slide.next_slide.bullet_points.append("• No other class may overlap");
+        global_slide.next_slide.bullet_points.append("• Commit your work when done");
+        global_slide.next_slide.bullet_points.append("• Don't forget to breathe!");
 
 
         box = new Box("Librarian", WHITE_ARROW_CONNECTOR);
@@ -657,6 +657,7 @@ void dismiss_slide() {
 
 class Slide {
   PImage image = null;
+  Slide next_slide = null;
   String title;
   StringList bullet_points = new StringList();
 
@@ -667,6 +668,12 @@ class Slide {
   void draw() {
     if (image != null) {
       image(image, 0, 0);
+
+      if (next_slide != null) {
+        translate(WINDOW_WIDTH, 0); // pushMatrix()
+        next_slide.draw();
+        translate(-WINDOW_WIDTH, 0); // popMatrix()
+      }
     } else {
       fill(0);
       textFont(font48, 48);
@@ -1204,7 +1211,10 @@ void draw() {
     global_mode = INTERACTIVE_MODE;
     global_slide = null;
   } else if (global_mode == RIGHT_SLIDE_OUT_MODE && global_t > 0.25) {
-    if (global_source_diagram.anchor == null) {
+    if (global_slide.next_slide != null) {
+      global_slide = global_slide.next_slide;
+      global_mode = DOWN_SLIDE_MODE;
+    } else if (global_source_diagram.anchor == null) {
       // THE END
       global_mode = ADMIRING_RESULTS_MODE;
       global_slide = null;
@@ -1250,34 +1260,36 @@ void draw() {
     translate(frac*WINDOW_WIDTH - WINDOW_WIDTH, 0);
   }
 
-  translate(SOURCE_CALENDAR_X, SOURCE_CALENDAR_Y); // pushMatrix()
-  global_source_diagram.draw();
-  translate(-SOURCE_CALENDAR_X, -SOURCE_CALENDAR_Y); // popMatrix()
+  if (global_slide == null || global_slide.next_slide == null) {
+    translate(SOURCE_CALENDAR_X, SOURCE_CALENDAR_Y); // pushMatrix()
+    global_source_diagram.draw();
+    translate(-SOURCE_CALENDAR_X, -SOURCE_CALENDAR_Y); // popMatrix()
 
-  translate(TARGET_CALENDAR_X, TARGET_CALENDAR_Y); // pushMatrix()
-  global_target_diagram.draw();
-  translate(-TARGET_CALENDAR_X, -TARGET_CALENDAR_Y); // popMatrix()
+    translate(TARGET_CALENDAR_X, TARGET_CALENDAR_Y); // pushMatrix()
+    global_target_diagram.draw();
+    translate(-TARGET_CALENDAR_X, -TARGET_CALENDAR_Y); // popMatrix()
 
-  translate(REFACTOR_BUTTON_X, REFACTOR_BUTTON_Y); // pushMatrix()
-  refactor_button.isEnabled = can_refactor();
-  refactor_button.draw();
-  translate(-REFACTOR_BUTTON_X, -REFACTOR_BUTTON_Y); // popMatrix()
+    translate(REFACTOR_BUTTON_X, REFACTOR_BUTTON_Y); // pushMatrix()
+    refactor_button.isEnabled = can_refactor();
+    refactor_button.draw();
+    translate(-REFACTOR_BUTTON_X, -REFACTOR_BUTTON_Y); // popMatrix()
 
-  translate(COMMIT_BUTTON_X, COMMIT_BUTTON_Y); // pushMatrix()
-  commit_button.isEnabled = can_commit();
-  commit_button.name = is_last_round() ? (is_last_scenario() ? "PLAY AGAIN" : "SHIP IT!") : "COMMIT";
-  commit_button.draw();
-  translate(-COMMIT_BUTTON_X, -COMMIT_BUTTON_Y); // popMatrix()
+    translate(COMMIT_BUTTON_X, COMMIT_BUTTON_Y); // pushMatrix()
+    commit_button.isEnabled = can_commit();
+    commit_button.name = is_last_round() ? (is_last_scenario() ? "PLAY AGAIN" : "SHIP IT!") : "COMMIT";
+    commit_button.draw();
+    translate(-COMMIT_BUTTON_X, -COMMIT_BUTTON_Y); // popMatrix()
 
-  fill(0);
-  rect(TARGET_CALENDAR_X-23, TARGET_CALENDAR_Y, 11, TIMESLOT_HEIGHT*7);
+    fill(0);
+    rect(TARGET_CALENDAR_X-23, TARGET_CALENDAR_Y, 11, TIMESLOT_HEIGHT*7);
 
-  fill(39, 58, 87); //fill(78, 115, 172);
-  textFont(font24, 24);
-  text( "CODE COMPLETE", SOURCE_CALENDAR_X, (SOURCE_CALENDAR_Y/2)-5, 
-    TIMESLOT_WIDTH*5, (SOURCE_CALENDAR_Y/2)+10);
-  text( "WORK IN PROGRESS - WEEK "+current_round, TARGET_CALENDAR_X, (SOURCE_CALENDAR_Y/2)-5, 
-    TIMESLOT_WIDTH*7, (SOURCE_CALENDAR_Y/2)+10);
+    fill(39, 58, 87); //fill(78, 115, 172);
+    textFont(font24, 24);
+    text( "CODE COMPLETE", SOURCE_CALENDAR_X, (SOURCE_CALENDAR_Y/2)-5, 
+      TIMESLOT_WIDTH*5, (SOURCE_CALENDAR_Y/2)+10);
+    text( "WORK IN PROGRESS - WEEK "+current_round, TARGET_CALENDAR_X, (SOURCE_CALENDAR_Y/2)-5, 
+      TIMESLOT_WIDTH*7, (SOURCE_CALENDAR_Y/2)+10);
+  }
 
   if (global_slide != null) {
     pushMatrix();

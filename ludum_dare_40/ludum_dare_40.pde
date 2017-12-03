@@ -142,7 +142,7 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       if (for_real) {
         global_slide = new Slide("Scenario 1 - Phase 2");
         global_slide.bullet_points.append("• If you can't resolve code conflicts, you may need to refactor");
-        global_slide.bullet_points.append("• Always research thoroughly"); // TODO: improve joke
+        global_slide.bullet_points.append("• Corporate policy: research time is for business purpopses only");
 
 
         box = new Box("Dating Sim", BLACK_DIAMOND_CONNECTOR);
@@ -209,38 +209,44 @@ Diagram loadRound(int scenario, int round, boolean for_real)
 
 
         box = new Box("Clown", NO_CONNECTOR);
-        result.entries.put(new PVector(1, 1), box);
-        box = new Box("Zombie", WHITE_ARROW_CONNECTOR);
         result.entries.put(new PVector(2, 1), box);
+        box = new Box("Zombie", WHITE_ARROW_CONNECTOR);
+        result.entries.put(new PVector(3, 1), box);
 
         box = new Box("Dragon", NO_CONNECTOR);
         //box.connectors.add(new PVector(-2, 1));
-        result.entries.put(new PVector(4, 1), box);
+        result.entries.put(new PVector(5, 1), box);
 
-        blocker = new Blocker("");
+        blocker = new Blocker("Weekend");
         result.entries.put(new PVector(0, 0), blocker);
         blocker = new Blocker("");
+        result.entries.put(new PVector(0, 1), blocker);
+        blocker = new Blocker("");
         result.entries.put(new PVector(0, 2), blocker);
-        blocker = new Blocker("Camp");
+        blocker = new Blocker("");
+        result.entries.put(new PVector(1, 0), blocker);
+        blocker = new Blocker("");
         result.entries.put(new PVector(1, 2), blocker);
-        blocker = new Blocker("");
-        result.entries.put(new PVector(3, 0), blocker);
-        blocker = new Blocker("");
-        result.entries.put(new PVector(3, 3), blocker);
+        blocker = new Blocker("Camp");
+        result.entries.put(new PVector(2, 2), blocker);
         blocker = new Blocker("");
         result.entries.put(new PVector(4, 0), blocker);
         blocker = new Blocker("");
-        result.entries.put(new PVector(5, 0), blocker);
-        blocker = new Blocker("");
-        result.entries.put(new PVector(5, 1), blocker);
-        blocker = new Blocker("");
-        result.entries.put(new PVector(5, 2), blocker);
-        blocker = new Blocker("Netflix\n& Chill");
-        result.entries.put(new PVector(2, 3), blocker);
-        blocker = new Blocker("Cards");
-        result.entries.put(new PVector(3, 2), blocker);
-        blocker = new Blocker("Metal Band");
         result.entries.put(new PVector(4, 3), blocker);
+        blocker = new Blocker("");
+        result.entries.put(new PVector(5, 0), blocker);
+        blocker = new Blocker("Weekend");
+        result.entries.put(new PVector(6, 0), blocker);
+        blocker = new Blocker("");
+        result.entries.put(new PVector(6, 1), blocker);
+        blocker = new Blocker("");
+        result.entries.put(new PVector(6, 2), blocker);
+        blocker = new Blocker("Netflix\n& Chill");
+        result.entries.put(new PVector(3, 3), blocker);
+        blocker = new Blocker("Cards");
+        result.entries.put(new PVector(4, 2), blocker);
+        blocker = new Blocker("Metal Band");
+        result.entries.put(new PVector(5, 3), blocker);
       }
     } else {
       return null;

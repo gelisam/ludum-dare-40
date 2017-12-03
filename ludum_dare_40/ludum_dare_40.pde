@@ -871,6 +871,8 @@ void mouseReleased() {
           if (result == null) {
             display_conflicts();
           } else {
+            global_source_diagram = new Diagram(global_source_diagram.w, global_source_diagram.h);
+
             PVector anchor = global_target_diagram.hover;
             global_target_diagram = result;
             global_target_diagram.anchor = anchor;

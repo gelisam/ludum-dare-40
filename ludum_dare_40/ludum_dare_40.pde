@@ -772,8 +772,9 @@ void mouseReleased() {
           if (result == null) {
             display_conflicts();
           } else {
+            PVector anchor = global_target_diagram.hover;
             global_target_diagram = result;
-            global_target_diagram.anchor = global_target_diagram.hover;
+            global_target_diagram.anchor = anchor;
           }
         }
       }

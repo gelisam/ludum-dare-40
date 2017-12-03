@@ -668,12 +668,6 @@ class Slide {
   void draw() {
     if (image != null) {
       image(image, 0, 0);
-
-      if (next_slide != null) {
-        translate(WINDOW_WIDTH, 0); // pushMatrix()
-        next_slide.draw();
-        translate(-WINDOW_WIDTH, 0); // popMatrix()
-      }
     } else {
       fill(0);
       textFont(font48, 48);
@@ -685,6 +679,12 @@ class Slide {
         text(bullet_points.get(j), WINDOW_WIDTH/4, WINDOW_HEIGHT/2 + j*50);
       }
       textAlign(CENTER);
+    }
+
+    if (next_slide != null) {
+      translate(WINDOW_WIDTH, 0); // pushMatrix()
+      next_slide.draw();
+      translate(-WINDOW_WIDTH, 0); // popMatrix()
     }
   }
 }
@@ -1260,7 +1260,7 @@ void draw() {
     translate(frac*WINDOW_WIDTH - WINDOW_WIDTH, 0);
   }
 
-  if (global_slide == null || global_slide.next_slide == null) {
+  if (global_mode == RIGHT_SLIDE_IN_MODE || global_slide == null || global_slide.next_slide == null) {
     translate(SOURCE_CALENDAR_X, SOURCE_CALENDAR_Y); // pushMatrix()
     global_source_diagram.draw();
     translate(-SOURCE_CALENDAR_X, -SOURCE_CALENDAR_Y); // popMatrix()

@@ -32,6 +32,7 @@ final int WHITE_DIAMOND_CONNECTOR = 3; // aggregation
 final int INTERACTIVE_MODE = 0;
 final int DISPLAYING_CONFLICTS_MODE = 1;
 final int ADMIRING_RESULTS_MODE = 2;
+final int SLIDE_MODE = 3;
 
 final int BOX_ALPHA = 128;
 
@@ -70,6 +71,8 @@ ArrayList<Diagram> global_completed_diagrams;
 Diagram global_completed_diagram;
 Diagram global_source_diagram;
 Diagram global_target_diagram;
+
+Slide global_slide = new Slide("Insert Title Here");
 
 PFont font16;
 PFont font24;
@@ -306,6 +309,28 @@ void commit() {
     } else {
       global_mode = INTERACTIVE_MODE;
     }
+  }
+}
+
+
+void show_next_slide() {
+  global_t = 0.0;
+  global_mode = SLIDE_MODE;
+}
+
+
+class Slide {
+  String title;
+  StringList bullet_points = new StringList();
+
+  Slide(String title_) {
+    title = title_;
+  }
+
+  void draw() {
+    fill(0);
+    textFont(font24, 24);
+    text(title, WINDOW_WIDTH/2, WINDOW_HEIGHT/2);
   }
 }
 
@@ -789,6 +814,8 @@ void draw() {
     global_source_diagram.clear_conflict_markers();
     global_target_diagram.clear_conflict_markers();
     global_mode = INTERACTIVE_MODE;
+  } else if (global_mode == SLIDE_MODE && global_t > 3) {
+    global_mode = INTERACTIVE_MODE;
   }
 
 
@@ -796,6 +823,16 @@ void draw() {
 
   image(background_image, 0, 0);
   pushMatrix();
+
+  if (global_mode == SLIDE_MODE) {
+    if (global_t < 1.0) {
+      translate(0, -global_t * WINDOW_HEIGHT);
+    } else if (global_t < 2) {
+      translate(0, -WINDOW_HEIGHT);
+    } else {
+      translate(0, WINDOW_HEIGHT -(global_t-2)*WINDOW_HEIGHT);
+    }
+  }
 
   translate(SOURCE_CALENDAR_X, SOURCE_CALENDAR_Y); // pushMatrix()
   global_source_diagram.draw();
@@ -808,15 +845,13 @@ void draw() {
   translate(REFACTOR_BUTTON_X, REFACTOR_BUTTON_Y); // pushMatrix()
   refactor_button.isEnabled = can_refactor();
   refactor_button.draw();
-  translate(-REFACTOR_BUTTON_X, -REFACTOR_BUTTON_Y); // pushMatrix()
+  translate(-REFACTOR_BUTTON_X, -REFACTOR_BUTTON_Y); // popMatrix()
 
   translate(COMMIT_BUTTON_X, COMMIT_BUTTON_Y); // pushMatrix()
   commit_button.isEnabled = can_commit();
   commit_button.name = is_last_round() ? (is_last_scenario() ? "PLAY AGAIN" : "SHIP IT!") : "COMMIT";
   commit_button.draw();
-  translate(-COMMIT_BUTTON_X, -COMMIT_BUTTON_Y); // pushMatrix()
-
-  popMatrix();
+  translate(-COMMIT_BUTTON_X, -COMMIT_BUTTON_Y); // popMatrix()
 
   fill(0);
   rect(TARGET_CALENDAR_X-23, TARGET_CALENDAR_Y, 11, TIMESLOT_HEIGHT*7);
@@ -827,6 +862,17 @@ void draw() {
     TIMESLOT_WIDTH*5, (SOURCE_CALENDAR_Y/2)+10);
   text( "WORK IN PROGRESS - WEEK "+current_round, TARGET_CALENDAR_X, (SOURCE_CALENDAR_Y/2)-5, 
     TIMESLOT_WIDTH*7, (SOURCE_CALENDAR_Y/2)+10);
+
+  translate(0, WINDOW_HEIGHT); // pushMatrix()
+  global_slide.draw();
+  translate(0, -WINDOW_HEIGHT); // popMatrix()
+
+  translate(0, -WINDOW_HEIGHT); // pushMatrix()
+  global_slide.draw();
+  translate(0, WINDOW_HEIGHT); // popMatrix()
+
+  popMatrix();
+
 
   // DEBUG
 }
@@ -932,6 +978,8 @@ void keyPressed() {
       refactor();
     } else if (keyCode == RIGHT) {
       commit();
+    } else if (keyCode == DOWN) {
+      show_next_slide();
     }
   }
 }

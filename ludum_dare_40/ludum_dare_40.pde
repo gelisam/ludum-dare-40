@@ -36,13 +36,16 @@ final int FIRST_SLIDE_MODE = 3;
 final int DOWN_SLIDE_IN_MODE = 3;
 final int DOWN_SLIDE_MODE = 4;
 final int DOWN_SLIDE_OUT_MODE = 5;
-final int RIGHT_SLIDE_IN_MODE = 6;
-final int RIGHT_SLIDE_MODE = 7;
-final int RIGHT_SLIDE_OUT_MODE = 8;
-final int LEFT_SLIDE_IN_MODE = 9;
-final int LEFT_SLIDE_MODE = 10;
-final int LEFT_SLIDE_OUT_MODE = 11;
-final int LAST_SLIDE_MODE = 11;
+final int UP_SLIDE_IN_MODE = 6;
+final int UP_SLIDE_MODE = 7;
+final int UP_SLIDE_OUT_MODE = 8;
+final int RIGHT_SLIDE_IN_MODE = 9;
+final int RIGHT_SLIDE_MODE = 10;
+final int RIGHT_SLIDE_OUT_MODE = 11;
+final int LEFT_SLIDE_IN_MODE = 12;
+final int LEFT_SLIDE_MODE = 13;
+final int LEFT_SLIDE_OUT_MODE = 14;
+final int LAST_SLIDE_MODE = 14;
 
 final int BOX_ALPHA = 128;
 
@@ -503,7 +506,7 @@ void refactor() {
 
     global_next_target_diagram = loadRound(current_scenario, current_round, true);
 
-    slide_left();
+    slide_up();
   }
 }
 
@@ -554,6 +557,11 @@ void slide_down() {
   global_mode = DOWN_SLIDE_IN_MODE;
 }
 
+void slide_up() {
+  global_t = 0.0;
+  global_mode = UP_SLIDE_IN_MODE;
+}
+
 void dismiss_slide() {
   if (global_mode == RIGHT_SLIDE_MODE) {
     global_t = 0.0;
@@ -564,6 +572,9 @@ void dismiss_slide() {
   } else if (global_mode == DOWN_SLIDE_MODE) {
     global_t = 0.0;
     global_mode = DOWN_SLIDE_OUT_MODE;
+  } else if (global_mode == UP_SLIDE_MODE) {
+    global_t = 0.0;
+    global_mode = UP_SLIDE_OUT_MODE;
   }
 }
 
@@ -1088,6 +1099,10 @@ void draw() {
     global_source_diagram = global_next_source_diagram;
     global_target_diagram = global_next_target_diagram;
     global_mode = DOWN_SLIDE_MODE;
+  } else if (global_mode == UP_SLIDE_IN_MODE && global_t > 0.25) {
+    global_source_diagram = global_next_source_diagram;
+    global_target_diagram = global_next_target_diagram;
+    global_mode = UP_SLIDE_MODE;
   } else if (global_mode == RIGHT_SLIDE_IN_MODE && global_t > 0.25) {
     global_source_diagram = global_next_source_diagram;
     global_target_diagram = global_next_target_diagram;
@@ -1097,6 +1112,8 @@ void draw() {
     global_target_diagram = global_next_target_diagram;
     global_mode = LEFT_SLIDE_MODE;
   } else if (global_mode == DOWN_SLIDE_OUT_MODE && global_t > 0.25) {
+    global_mode = INTERACTIVE_MODE;
+  } else if (global_mode == UP_SLIDE_OUT_MODE && global_t > 0.25) {
     global_mode = INTERACTIVE_MODE;
   } else if (global_mode == RIGHT_SLIDE_OUT_MODE && global_t > 0.25) {
     if (global_source_diagram.anchor == null) {
@@ -1121,7 +1138,13 @@ void draw() {
   } else if (global_mode == DOWN_SLIDE_MODE) {
     translate(0, -WINDOW_HEIGHT);
   } else if (global_mode == DOWN_SLIDE_OUT_MODE) {
-    translate(0, WINDOW_HEIGHT -frac*WINDOW_HEIGHT);
+    translate(0, WINDOW_HEIGHT - frac*WINDOW_HEIGHT);
+  } else if (global_mode == UP_SLIDE_IN_MODE) {
+    translate(0, frac * WINDOW_HEIGHT);
+  } else if (global_mode == UP_SLIDE_MODE) {
+    translate(0, WINDOW_HEIGHT);
+  } else if (global_mode == UP_SLIDE_OUT_MODE) {
+    translate(0, frac*WINDOW_HEIGHT - WINDOW_HEIGHT);
   } else if (global_mode == RIGHT_SLIDE_IN_MODE) {
     translate(-frac*WINDOW_WIDTH, 0);
   } else if (global_mode == RIGHT_SLIDE_MODE) {
@@ -1135,7 +1158,6 @@ void draw() {
   } else if (global_mode == LEFT_SLIDE_OUT_MODE) {
     translate(frac*WINDOW_WIDTH - WINDOW_WIDTH, 0);
   }
-  println(global_mode);
 
   translate(SOURCE_CALENDAR_X, SOURCE_CALENDAR_Y); // pushMatrix()
   global_source_diagram.draw();
@@ -1173,6 +1195,10 @@ void draw() {
       translate(0, WINDOW_HEIGHT);
     } else if (global_mode == DOWN_SLIDE_OUT_MODE) {
       translate(0, -WINDOW_HEIGHT);
+    } else if (global_mode == UP_SLIDE_IN_MODE || global_mode == UP_SLIDE_MODE) {
+      translate(0, -WINDOW_HEIGHT);
+    } else if (global_mode == UP_SLIDE_OUT_MODE) {
+      translate(0, WINDOW_HEIGHT);
     } else if (global_mode == RIGHT_SLIDE_IN_MODE || global_mode == RIGHT_SLIDE_MODE) {
       translate(WINDOW_WIDTH, 0);
     } else if (global_mode == RIGHT_SLIDE_OUT_MODE) {
@@ -1256,7 +1282,7 @@ void mouseReleased() {
         }
       }
     }
-  } else if (global_mode == DOWN_SLIDE_MODE || global_mode == RIGHT_SLIDE_MODE || global_mode == LEFT_SLIDE_MODE) {
+  } else if (global_mode == DOWN_SLIDE_MODE || global_mode == UP_SLIDE_MODE || global_mode == RIGHT_SLIDE_MODE || global_mode == LEFT_SLIDE_MODE) {
     dismiss_slide();
   }
 }
@@ -1292,7 +1318,7 @@ void mouseMoved() {
 }
 
 void keyPressed() {
-  if (global_mode == DOWN_SLIDE_MODE || global_mode == RIGHT_SLIDE_MODE || global_mode == LEFT_SLIDE_MODE) {
+  if (global_mode == DOWN_SLIDE_MODE || global_mode == UP_SLIDE_MODE || global_mode == RIGHT_SLIDE_MODE || global_mode == LEFT_SLIDE_MODE) {
     dismiss_slide();
   } else {
     if (keyCode == LEFT || keyCode == UP || keyCode == BACKSPACE) {

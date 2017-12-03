@@ -87,6 +87,7 @@ Diagram global_next_source_diagram;
 Diagram global_next_target_diagram;
 
 Slide global_slide = null;
+HashMap<PVector, Boolean> seen_transitions = new HashMap<PVector, Boolean>();
 
 PFont font16;
 PFont font24;
@@ -475,6 +476,10 @@ Diagram loadRound(int scenario, int round, boolean for_real)
     return null;
   }
 
+  if (for_real && seen_transitions.get(new PVector(current_scenario, current_round)) != null) {
+    global_slide = null;
+  }
+
   return result;
 }
 
@@ -609,6 +614,8 @@ void slide_up() {
 }
 
 void dismiss_slide() {
+  seen_transitions.put(new PVector(current_scenario, current_round), true);
+
   if (global_mode == RIGHT_SLIDE_MODE) {
     global_t = 0.0;
     global_mode = RIGHT_SLIDE_OUT_MODE;
@@ -1145,18 +1152,22 @@ void draw() {
     global_source_diagram = global_next_source_diagram;
     global_target_diagram = global_next_target_diagram;
     global_mode = DOWN_SLIDE_MODE;
+    if (global_slide == null) dismiss_slide();
   } else if (global_mode == UP_SLIDE_IN_MODE && global_t > 0.25) {
     global_source_diagram = global_next_source_diagram;
     global_target_diagram = global_next_target_diagram;
     global_mode = UP_SLIDE_MODE;
+    if (global_slide == null) dismiss_slide();
   } else if (global_mode == RIGHT_SLIDE_IN_MODE && global_t > 0.25) {
     global_source_diagram = global_next_source_diagram;
     global_target_diagram = global_next_target_diagram;
     global_mode = RIGHT_SLIDE_MODE;
+    if (global_slide == null) dismiss_slide();
   } else if (global_mode == LEFT_SLIDE_IN_MODE && global_t > 0.25) {
     global_source_diagram = global_next_source_diagram;
     global_target_diagram = global_next_target_diagram;
     global_mode = LEFT_SLIDE_MODE;
+    if (global_slide == null) dismiss_slide();
   } else if (global_mode == DOWN_SLIDE_OUT_MODE && global_t > 0.25) {
     global_mode = INTERACTIVE_MODE;
     global_slide = null;

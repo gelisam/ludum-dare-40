@@ -73,7 +73,7 @@ final PVector BOX_CORNER_VLR = new PVector( BOX_CORNER_LR.x, BOX_CORNER_LR.y+1 )
 
 // GLOBALS
 
-int global_mode = 0;
+int global_mode = RIGHT_SLIDE_MODE;
 float global_t = 0.0;
 
 int current_scenario;
@@ -86,7 +86,7 @@ Diagram global_target_diagram;
 Diagram global_next_source_diagram;
 Diagram global_next_target_diagram;
 
-Slide global_slide;
+Slide global_slide = null;
 
 PFont font16;
 PFont font24;
@@ -110,8 +110,6 @@ Diagram loadRound(int scenario, int round, boolean for_real)
   Blocker blocker;
 
   if (scenario == 1) {
-
-
     if (round == 0) {
       if (for_real) {
         box = new Box( "Genre:Gothic", BLACK_DIAMOND_CONNECTOR);
@@ -123,6 +121,10 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       }
     } else if (round == 1) {
       if (for_real) {
+        global_slide = new Slide("Insert Title Here");
+        global_slide.bullet_points.append("• Round 1");
+
+
         box = new Box("Librarian", WHITE_ARROW_CONNECTOR);
         box.connectors.add(new PVector(0, 1));
         result.entries.put(new PVector(3, 2), box);
@@ -132,6 +134,10 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       }
     } else if (round == 2) {
       if (for_real) {
+        global_slide = new Slide("Insert Title Here");
+        global_slide.bullet_points.append("• Round 2");
+
+
         box = new Box("Dating Sim", BLACK_DIAMOND_CONNECTOR);
         result.entries.put(new PVector(3, 2), box);
 
@@ -143,6 +149,10 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       }
     } else if (round == 3) {
       if (for_real) {
+        global_slide = new Slide("Insert Title Here");
+        global_slide.bullet_points.append("• Round 3");
+
+
         box = new Box("Horror", WHITE_ARROW_CONNECTOR);
         box.connectors.add(new PVector(-1, 1));
         box.connectors.add(new PVector(1, 1));
@@ -160,6 +170,12 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       }
     } else if (round == 4) {
       if (for_real) {
+        global_slide = new Slide("Insert Title Here");
+        global_slide.bullet_points.append("• First point");
+        global_slide.bullet_points.append("• Second point");
+        global_slide.bullet_points.append("• Third point");
+
+
         box = new Box("HouseType", WHITE_ARROW_CONNECTOR);
         box.connectors.add(new PVector(-1, 1));
         result.entries.put(new PVector(5, 1), box);
@@ -182,6 +198,12 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       }
     } else if (round == 5) {
       if (for_real) {
+        global_slide = new Slide("Insert Title Here");
+        global_slide.bullet_points.append("• First point");
+        global_slide.bullet_points.append("• Second point");
+        global_slide.bullet_points.append("• Third point");
+
+
         box = new Box("Clown", NO_CONNECTOR);
         result.entries.put(new PVector(1, 1), box);
         box = new Box("Zombie", WHITE_ARROW_CONNECTOR);
@@ -231,6 +253,12 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       }
     } else if (round == 1) {
       if (for_real) {
+        global_slide = new Slide("Insert Title Here");
+        global_slide.bullet_points.append("• First point");
+        global_slide.bullet_points.append("• Second point");
+        global_slide.bullet_points.append("• Third point");
+
+
         for (int j=0; j<7; ++j) {
           blocker = new Blocker((j == 0) ? "Weekend" : "");
           result.entries.put(new PVector(0, j), blocker);
@@ -261,6 +289,12 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       }
     } else if (round == 2) {
       if (for_real) {
+        global_slide = new Slide("Insert Title Here");
+        global_slide.bullet_points.append("• First point");
+        global_slide.bullet_points.append("• Second point");
+        global_slide.bullet_points.append("• Third point");
+
+
         for (int j=0; j<6; ++j) {
           blocker = new Blocker((j == 0) ? "Weekend" : "");
           result.entries.put(new PVector(0, j), blocker);
@@ -307,6 +341,12 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       }
     } else if (round == 3) {
       if (for_real) {
+        global_slide = new Slide("Insert Title Here");
+        global_slide.bullet_points.append("• First point");
+        global_slide.bullet_points.append("• Second point");
+        global_slide.bullet_points.append("• Third point");
+
+
         for (int j=0; j<5; ++j) {
           blocker = new Blocker((j == 0) ? "Weekend" : "");
           result.entries.put(new PVector(0, j), blocker);
@@ -353,6 +393,12 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       }
     } else if (round == 4) {
       if (for_real) {
+        global_slide = new Slide("Insert Title Here");
+        global_slide.bullet_points.append("• First point");
+        global_slide.bullet_points.append("• Second point");
+        global_slide.bullet_points.append("• Third point");
+
+
         for (int j=0; j<4; ++j) {
           if (j % 2 == 0) {
             blocker = new Blocker("Sprint planning");
@@ -391,6 +437,12 @@ Diagram loadRound(int scenario, int round, boolean for_real)
     if (round == 0) {
     } else if (round == 1) {
       if (for_real) {
+        global_slide = new Slide("Insert Title Here");
+        global_slide.bullet_points.append("• First point");
+        global_slide.bullet_points.append("• Second point");
+        global_slide.bullet_points.append("• Third point");
+
+
         blocker = new Blocker("by");
         result.entries.put(new PVector(1, 2), blocker);
         blocker = new Blocker("Michaelson\nBritt");
@@ -461,12 +513,6 @@ void setup() {
   // Init buttons
   refactor_button = new Button("REFACTOR", REFACTOR_BUTTON_WIDTH, REFACTOR_BUTTON_HEIGHT);
   commit_button = new Button("COMMIT", COMMIT_BUTTON_WIDTH, COMMIT_BUTTON_HEIGHT); 
-
-  // Init global slide
-  global_slide = new Slide("Insert Title Here");
-  global_slide.bullet_points.append("• First point");
-  global_slide.bullet_points.append("• Second point");
-  global_slide.bullet_points.append("• Third point");
 
   loadScenario(1);
   global_source_diagram = global_next_source_diagram;
@@ -1113,17 +1159,22 @@ void draw() {
     global_mode = LEFT_SLIDE_MODE;
   } else if (global_mode == DOWN_SLIDE_OUT_MODE && global_t > 0.25) {
     global_mode = INTERACTIVE_MODE;
+    global_slide = null;
   } else if (global_mode == UP_SLIDE_OUT_MODE && global_t > 0.25) {
     global_mode = INTERACTIVE_MODE;
+    global_slide = null;
   } else if (global_mode == RIGHT_SLIDE_OUT_MODE && global_t > 0.25) {
     if (global_source_diagram.anchor == null) {
       // THE END
       global_mode = ADMIRING_RESULTS_MODE;
+      global_slide = null;
     } else {
       global_mode = INTERACTIVE_MODE;
+      global_slide = null;
     }
   } else if (global_mode == LEFT_SLIDE_OUT_MODE && global_t > 0.25) {
     global_mode = INTERACTIVE_MODE;
+    global_slide = null;
   }
 
 
@@ -1188,7 +1239,7 @@ void draw() {
   text( "WORK IN PROGRESS - WEEK "+current_round, TARGET_CALENDAR_X, (SOURCE_CALENDAR_Y/2)-5, 
     TIMESLOT_WIDTH*7, (SOURCE_CALENDAR_Y/2)+10);
 
-  if (global_mode >= FIRST_SLIDE_MODE && global_mode <= LAST_SLIDE_MODE) {
+  if (global_slide != null) {
     pushMatrix();
 
     if (global_mode == DOWN_SLIDE_IN_MODE || global_mode == DOWN_SLIDE_MODE) {

@@ -80,6 +80,7 @@ PImage conflicting_timeslot_image;
 Button refactor_button;
 Button commit_button;
 
+// null if the scenario is complete
 Diagram loadRound( int scenario, int round )
 {
   Diagram result = new Diagram(7, 7);
@@ -87,6 +88,39 @@ Diagram loadRound( int scenario, int round )
   Blocker blocker;
 
   if (scenario == 1) {
+    if (round == 0) {
+      box = new Box(global_name_pool.next_name(), BLACK_DIAMOND_CONNECTOR);
+      box.connectors.add(new PVector(0, 1));
+      result.entries.put(new PVector(0, 0), box);
+
+      box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+      result.entries.put(new PVector(0, 1), box);
+    } else if (round == 1) {
+      box = new Box(global_name_pool.next_name(), WHITE_ARROW_CONNECTOR);
+      box.connectors.add(new PVector(-1, 1));
+      box.connectors.add(new PVector(1, 1));
+      result.entries.put(new PVector(3, 2), box);
+
+      box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+      result.entries.put(new PVector(2, 3), box);
+
+      box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+      result.entries.put(new PVector(4, 3), box);
+    } else if (round == 2) {
+      box = new Box(global_name_pool.next_name(), WHITE_ARROW_CONNECTOR);
+      box.connectors.add(new PVector(-1, 1));
+      box.connectors.add(new PVector(1, 1));
+      result.entries.put(new PVector(3, 2), box);
+
+      box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+      result.entries.put(new PVector(2, 3), box);
+
+      box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+      result.entries.put(new PVector(4, 3), box);
+    } else {
+      return null;
+    }
+  } else if (scenario == 2) {
     if (round == 0) {
       box = new Box(global_name_pool.next_name(), BLACK_DIAMOND_CONNECTOR);
       box.connectors.add(new PVector(0, 1));
@@ -108,6 +142,8 @@ Diagram loadRound( int scenario, int round )
 
       blocker = new Blocker("meeting");
       result.entries.put(new PVector(2, 3), blocker);
+    } else {
+      return null;
     }
   }
 
@@ -200,7 +236,12 @@ void commit() {
     global_source_diagram = global_target_diagram.simplify();
     global_source_diagram.guess_anchor();
 
-    global_target_diagram = loadRound(current_scenario, current_round);
+    Diagram next_diagram = loadRound(current_scenario, current_round);
+    if (next_diagram == null) {
+      loadScenario(current_scenario+1);
+    } else {
+      global_target_diagram = next_diagram;
+    }
   }
 }
 

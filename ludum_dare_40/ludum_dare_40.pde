@@ -413,6 +413,14 @@ Diagram loadRound(int scenario, int round, boolean for_real)
 
 
         for (int j=0; j<4; ++j) {
+          box = new Box("Work", BLACK_DIAMOND_CONNECTOR);
+          box.connectors.add(new PVector(5-0, 4-j));
+          result.entries.put(new PVector(0, j), box);
+
+          box = new Box("Work", WHITE_DIAMOND_CONNECTOR);
+          box.connectors.add(new PVector(5-6, 4-j));
+          result.entries.put(new PVector(6, j), box);
+
           if (j % 2 == 0) {
             blocker = new Blocker("Sprint planning");
             result.entries.put(new PVector(1, j), blocker);
@@ -427,6 +435,9 @@ Diagram loadRound(int scenario, int round, boolean for_real)
             result.entries.put(new PVector(5, j), blocker);
           }
         }
+
+        blocker = new Blocker("Therapy");
+        result.entries.put(new PVector(6, 2), blocker);
 
         blocker = new Blocker("Last minute\ntesting");
         result.entries.put(new PVector(6, 4), blocker);

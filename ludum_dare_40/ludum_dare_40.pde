@@ -67,6 +67,7 @@ int current_round;
 
 NamePool global_name_pool;
 ArrayList<Diagram> global_completed_diagrams;
+Diagram global_completed_diagram;
 Diagram global_source_diagram;
 Diagram global_target_diagram;
 
@@ -287,8 +288,7 @@ void commit() {
   if (can_commit()) {
     ++current_round;
 
-    Diagram completed_diagram = global_source_diagram;
-    global_completed_diagrams.add(completed_diagram);
+    global_completed_diagrams.add(global_completed_diagram);
 
     global_source_diagram = global_target_diagram.simplify();
     global_source_diagram.guess_anchor();
@@ -881,6 +881,7 @@ void mouseReleased() {
           if (result == null) {
             display_conflicts();
           } else {
+            global_completed_diagram = global_source_diagram;
             global_source_diagram = new Diagram(global_source_diagram.w, global_source_diagram.h);
 
             PVector anchor = global_target_diagram.hover;

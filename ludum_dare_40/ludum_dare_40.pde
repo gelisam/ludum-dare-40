@@ -1011,7 +1011,16 @@ class Diagram {
 
     for (PVector delta : entries.keySet()) {
       Entry entry = entries.get(delta);
-      entry.draw(round(delta.x), round(delta.y));
+      if (entry instanceof Box) {
+        entry.draw(round(delta.x), round(delta.y));
+      }
+    }
+
+    for (PVector delta : entries.keySet()) {
+      Entry entry = entries.get(delta);
+      if (entry instanceof Blocker) {
+        entry.draw(round(delta.x), round(delta.y));
+      }
     }
   }
 }

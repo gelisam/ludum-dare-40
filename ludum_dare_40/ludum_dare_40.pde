@@ -157,7 +157,7 @@ Diagram loadRound(int scenario, int round, boolean for_real)
     } else {
       return null;
     }
-  } else {
+  } else if (scenario == 3) {
     if (round == 0) {
     } else if (round == 1) {
       if (for_real) {
@@ -189,6 +189,8 @@ Diagram loadRound(int scenario, int round, boolean for_real)
     } else {
       return null;
     }
+  } else {
+    return null;
   }
 
   return result;
@@ -277,6 +279,10 @@ boolean is_last_round() {
   return (loadRound(current_scenario, current_round+1, false) == null);
 }
 
+boolean is_last_scenario() {
+  return (loadRound(current_scenario+1, 1, false) == null);
+}
+
 void commit() {
   if (can_commit()) {
     ++current_round;
@@ -289,7 +295,7 @@ void commit() {
 
     Diagram next_diagram = loadRound(current_scenario, current_round, true);
     if (next_diagram == null) {
-      loadScenario(current_scenario+1);
+      loadScenario(is_last_scenario() ? 1 : (current_scenario+1));
     } else {
       global_target_diagram = next_diagram;
     }
@@ -806,7 +812,7 @@ void draw() {
 
   translate(COMMIT_BUTTON_X, COMMIT_BUTTON_Y); // pushMatrix()
   commit_button.isEnabled = can_commit();
-  commit_button.name = is_last_round() ? "SHIP IT!" : "COMMIT";
+  commit_button.name = is_last_round() ? (is_last_scenario() ? "PLAY AGAIN" : "SHIP IT!") : "COMMIT";
   commit_button.draw();
   translate(-COMMIT_BUTTON_X, -COMMIT_BUTTON_Y); // pushMatrix()
 

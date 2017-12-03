@@ -267,9 +267,9 @@ Diagram loadRound(int scenario, int round, boolean for_real)
     } else if (round == 1) {
       if (for_real) {
         global_slide = new Slide("Congratulations on finishing the tutorial!");
-        global_slide.bullet_points.append("• First point");
-        global_slide.bullet_points.append("• Second point");
-        global_slide.bullet_points.append("• Third point");
+        global_slide.next_slide = new Slide("Scenario 2 - Network code");
+        global_slide.next_slide.bullet_points.append("• Management assessment: piece of cake");
+        global_slide.next_slide.bullet_points.append("• Corporate policy: enjoy your weekends");
 
 
         for (int j=0; j<7; ++j) {
@@ -302,10 +302,10 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       }
     } else if (round == 2) {
       if (for_real) {
-        global_slide = new Slide("Insert Title Here");
-        global_slide.bullet_points.append("• First point");
-        global_slide.bullet_points.append("• Second point");
-        global_slide.bullet_points.append("• Third point");
+        global_slide = new Slide("Scenario 2 - Phase 2");
+        global_slide.bullet_points.append("• Plenty of time for planning");
+        global_slide.bullet_points.append("• Big travel budget");
+        global_slide.bullet_points.append("• Seminars for everybody");
 
 
         for (int j=0; j<6; ++j) {
@@ -354,8 +354,8 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       }
     } else if (round == 3) {
       if (for_real) {
-        global_slide = new Slide("Insert Title Here");
-        global_slide.bullet_points.append("• First point");
+        global_slide = new Slide("Scenario 2 - Phase 3");
+        global_slide.bullet_points.append("• Project priority: Put the K in kwality assurance");
         global_slide.bullet_points.append("• Second point");
         global_slide.bullet_points.append("• Third point");
 

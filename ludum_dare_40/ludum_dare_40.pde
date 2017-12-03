@@ -81,34 +81,38 @@ void setup() {
 
 
   Box box;
+  Blocker blocker;
 
   // Init source calendar
   global_source_calendar = new Calendar(1, 2);
 
-  // Init source boxes
-  box = new Box(BLACK_DIAMOND_CONNECTOR);
+  // Init source entries
+  box = new Box(global_name_pool.next_name(), BLACK_DIAMOND_CONNECTOR);
   box.connectors.add(new PVector(0, 1));
-  global_source_calendar.diagram.boxes.put(new PVector(0, 0), box);
+  global_source_calendar.diagram.entries.put(new PVector(0, 0), box);
 
-  box = new Box(NO_CONNECTOR);
-  global_source_calendar.diagram.boxes.put(new PVector(0, 1), box);
+  box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+  global_source_calendar.diagram.entries.put(new PVector(0, 1), box);
 
   global_source_calendar.guess_anchor();
 
   // Init target calendar
   global_target_calendar = new Calendar(7, 7);
 
-  // Init target boxes
-  box = new Box(WHITE_ARROW_CONNECTOR);
+  // Init target entries
+  box = new Box(global_name_pool.next_name(), WHITE_ARROW_CONNECTOR);
   box.connectors.add(new PVector(0, 1));
   box.connectors.add(new PVector(1, 1));
-  global_target_calendar.diagram.boxes.put(new PVector(1, 1), box);
+  global_target_calendar.diagram.entries.put(new PVector(1, 1), box);
 
-  box = new Box(NO_CONNECTOR);
-  global_target_calendar.diagram.boxes.put(new PVector(1, 2), box);
+  box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+  global_target_calendar.diagram.entries.put(new PVector(1, 2), box);
 
-  box = new Box(NO_CONNECTOR);
-  global_target_calendar.diagram.boxes.put(new PVector(2, 2), box);
+  box = new Box(global_name_pool.next_name(), NO_CONNECTOR);
+  global_target_calendar.diagram.entries.put(new PVector(2, 2), box);
+
+  blocker = new Blocker("meeting");
+  global_target_calendar.diagram.entries.put(new PVector(2, 3), blocker);
 }
 
 
@@ -183,29 +187,68 @@ class NamePool {
 }
 
 
-class Box {
-  String name;
+abstract class Entry {
+  String flavor_text;
+  boolean conflicting = false;
+
+  abstract Entry copy();
+  abstract void clear_conflict_markers();
+  abstract Entry merge(Entry other);
+  abstract void draw(int i, int j);
+}
+
+class Box extends Entry {
   int connector_type;
   ArrayList<PVector> connectors = new ArrayList<PVector>();
-  boolean conflicting = false;
   boolean conflicting_connector = false;
 
-  Box(int connector_type_) {
-    name = global_name_pool.next_name();
+  Box(String name, int connector_type_) {
+    flavor_text = name;
     connector_type = connector_type_;
   }
 
-  Box(Box other) {
-    name = other.name;
-    connector_type = other.connector_type;
-    for (PVector connector : other.connectors) {
-      connectors.add(connector);
+  Box copy() {
+    Box result = new Box(flavor_text, connector_type);
+
+    result.flavor_text = flavor_text;
+    for (PVector connector : connectors) {
+      result.connectors.add(connector);
     }
+
+    return result;
   }
 
   void clear_conflict_markers() {
     conflicting = false;
     conflicting_connector = false;
+  }
+
+  Box merge(Entry entry) {
+    if (entry instanceof Box) {
+      Box other_box = (Box) entry;
+
+      if (are_connector_types_compatible(connector_type, other_box.connector_type)) {
+        Box result = new Box(flavor_text, connector_type | other_box.connector_type);
+
+        result.flavor_text = flavor_text;
+        for (PVector connector : connectors) {
+          result.connectors.add(connector);
+        }
+        for (PVector connector : other_box.connectors) {
+          result.connectors.add(connector);
+        }
+
+        return result;
+      } else {
+        conflicting_connector = true;
+        other_box.conflicting_connector = true;
+        return null;
+      }
+    } else {
+      conflicting = true;
+      entry.conflicting = true;
+      return null;
+    }
   }
 
   void draw_box(int i, int j) {
@@ -245,7 +288,7 @@ class Box {
     } else {
       fill(0);
     }
-    text(name, x+CLASS_WIDTH/2, y+15);
+    text(flavor_text, x+CLASS_WIDTH/2, y+15);
   }
 
   void draw_connector_glyph(int i1, int j1) {
@@ -319,11 +362,57 @@ class Box {
   }
 }
 
+class Blocker extends Entry {
+  Blocker(String flavor_text_) {
+    flavor_text = flavor_text_;
+  }
+
+  Blocker copy() {
+    Blocker result = new Blocker(flavor_text);
+    return result;
+  }
+
+  void clear_conflict_markers() {
+    conflicting = false;
+  }
+
+  Blocker merge(Entry entry) {
+    if (entry instanceof Blocker) {
+      Blocker result = new Blocker(flavor_text);
+      return result;
+    } else {
+      conflicting = true;
+      entry.conflicting = true;
+      return null;
+    }
+  }
+
+  void draw(int i, int j) {
+    int x = i*TIMESLOT_WIDTH;
+    int y = j*TIMESLOT_HEIGHT;
+
+    if (conflicting && is_flashing_red()) {
+      stroke(255, 0, 0);
+    } else {
+      stroke(0);
+    }
+    fill(243, 228, 59);
+    rect(x, y, TIMESLOT_WIDTH, TIMESLOT_HEIGHT);
+    
+    if (conflicting && is_flashing_red()) {
+      fill(255, 0, 0);
+    } else {
+      fill(0);
+    }
+    text(flavor_text, x+TIMESLOT_WIDTH/2, y+TIMESLOT_HEIGHT/2);
+  }
+}
+
 class Diagram {
-  HashMap<PVector, Box> boxes = new HashMap<PVector, Box>();
+  HashMap<PVector, Entry> entries = new HashMap<PVector, Entry>();
 
   PVector guess_anchor() {
-    for (PVector delta : boxes.keySet()) {
+    for (PVector delta : entries.keySet()) {
       return delta;
     }
 
@@ -335,38 +424,33 @@ class Diagram {
     Diagram result = new Diagram();
     boolean conflicting = false;
 
-    Box anchor_box = boxes.get(anchor);
+    Entry anchor_entry = entries.get(anchor);
 
-    for (PVector delta : boxes.keySet()) {
-      Box box = boxes.get(delta);
-      result.boxes.put(delta, new Box(box));
+    for (PVector delta : entries.keySet()) {
+      Entry entry = entries.get(delta);
+      result.entries.put(delta, entry.copy());
     }
 
     PVector anchor_delta = PVector.sub(anchor, other_anchor);
-    for (PVector delta : other.boxes.keySet()) {
-      Box other_box = other.boxes.get(delta);
+    for (PVector delta : other.entries.keySet()) {
+      Entry other_entry = other.entries.get(delta);
       PVector dest = PVector.add(delta, anchor_delta);
 
-      Box existing_box = boxes.get(dest);
-      if (existing_box == null) {
-        result.boxes.put(dest, new Box(other_box));
+      Entry existing_entry = entries.get(dest);
+      if (existing_entry == null) {
+        result.entries.put(dest, other_entry.copy());
       } else if (are_int_vectors_equal(dest, anchor)) {
-        // anchor point, both boxes are supposed to match
-        if (are_connector_types_compatible(existing_box.connector_type, other_box.connector_type)) {
-          Box result_box = result.boxes.get(dest);
-          result_box.connector_type = existing_box.connector_type | other_box.connector_type;
-          for (PVector other_connector : other_box.connectors) {
-            result_box.connectors.add(other_connector);
-          }
-        } else {
+        // anchor point, both entries are supposed to match
+        Entry merged_anchor = anchor_entry.merge(other_entry);
+        if (merged_anchor == null) {
           conflicting = true;
-          anchor_box.conflicting_connector = true;
-          other_box.conflicting_connector = true;
+        } else {
+          result.entries.put(dest, merged_anchor);
         }
       } else {
         conflicting = true;
-        other_box.conflicting = true;
-        existing_box.conflicting = true;
+        other_entry.conflicting = true;
+        existing_entry.conflicting = true;
       }
     }
 
@@ -378,9 +462,9 @@ class Diagram {
   }
 
   void clear_conflict_markers() {
-    for (PVector delta : boxes.keySet()) {
-      Box box = boxes.get(delta);
-      box.clear_conflict_markers();
+    for (PVector delta : entries.keySet()) {
+      Entry entry = entries.get(delta);
+      entry.clear_conflict_markers();
     }
   }
 
@@ -392,9 +476,9 @@ class Diagram {
   }
 
   void draw(int i, int j) {
-    for (PVector delta : boxes.keySet()) {
-      Box box = boxes.get(delta);
-      box.draw(i+round(delta.x), j+round(delta.y));
+    for (PVector delta : entries.keySet()) {
+      Entry entry = entries.get(delta);
+      entry.draw(i+round(delta.x), j+round(delta.y));
     }
   }
 }
@@ -492,10 +576,13 @@ void mouseReleased() {
       if (global_target_calendar.hover != null) {
         boolean conflicting = false;
 
-        Box target_anchor_box = global_target_calendar.diagram.boxes.get(global_target_calendar.hover);
-        if (target_anchor_box == null) {
+        Entry target_anchor_entry = global_target_calendar.diagram.entries.get(global_target_calendar.hover);
+        if (target_anchor_entry == null) {
           conflicting = true;
           global_target_calendar.conflicting_timeslot = global_target_calendar.hover;
+        } else if (!(target_anchor_entry instanceof Box)) {
+          conflicting = true;
+          target_anchor_entry.conflicting = true;
         }
 
         PVector anchor_delta = PVector.sub(global_source_calendar.anchor, global_target_calendar.hover);

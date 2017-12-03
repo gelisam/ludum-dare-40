@@ -1052,7 +1052,7 @@ void draw() {
 
   // DRAW
 
-  image(background_image, 0, 0);
+  background(background_image);
   pushMatrix();
 
   if (global_mode == SLIDE_MODE) {

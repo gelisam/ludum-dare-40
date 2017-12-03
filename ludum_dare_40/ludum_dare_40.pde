@@ -31,6 +31,7 @@ final int WHITE_DIAMOND_CONNECTOR = 3; // aggregation
 // interactive modes
 final int INTERACTIVE_MODE = 0;
 final int DISPLAYING_CONFLICTS_MODE = 1;
+final int ADMIRING_RESULTS_MODE = 2;
 
 final int BOX_ALPHA = 128;
 
@@ -229,11 +230,13 @@ void refactor() {
     global_source_diagram.guess_anchor();
 
     global_target_diagram = loadRound(current_scenario, current_round, true);
+
+    global_mode = INTERACTIVE_MODE;
   }
 }
 
 boolean can_commit() {
-  return true;
+  return (global_mode == ADMIRING_RESULTS_MODE);
 }
 
 boolean is_last_round() {
@@ -256,6 +259,8 @@ void commit() {
     } else {
       global_target_diagram = next_diagram;
     }
+
+    global_mode = INTERACTIVE_MODE;
   }
 }
 
@@ -831,6 +836,8 @@ void mouseReleased() {
             PVector anchor = global_target_diagram.hover;
             global_target_diagram = result;
             global_target_diagram.anchor = anchor;
+
+            global_mode = ADMIRING_RESULTS_MODE;
           }
         }
       }
@@ -869,7 +876,7 @@ void mouseMoved() {
 }
 
 void keyPressed() {
-  if (global_mode == INTERACTIVE_MODE) {
+  if (global_mode != DISPLAYING_CONFLICTS_MODE) {
     if (keyCode == LEFT) {
       refactor();
     } else if (keyCode == RIGHT) {

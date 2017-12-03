@@ -76,6 +76,7 @@ PImage timeslot_image;
 PImage anchor_image;
 PImage hover_image;
 PImage conflicting_timeslot_image;
+PImage blocker_image;
 
 Button refactor_button;
 Button commit_button;
@@ -143,6 +144,7 @@ void setup() {
   anchor_image = loadImage("background_timeslot_hilight.png");
   hover_image = loadImage("background_timeslot_hover.png");
   conflicting_timeslot_image = loadImage("background_timeslot_conflict.png");
+  blocker_image = loadImage("blocker.png");
 
   // Init buttons
   refactor_button = new Button("REFACTOR", REFACTOR_BUTTON_WIDTH, REFACTOR_BUTTON_HEIGHT);
@@ -406,7 +408,7 @@ class Box extends Entry {
           fill(255);
         }
       }
-      quad(x1, y1-4, x1-5, y1+5, x1, y1+10, x1+5, y1+5);
+      quad(x1, y1, x1-5, y1+5, x1, y1+10, x1+5, y1+5);
     }
   }
 
@@ -468,9 +470,11 @@ class Blocker extends Entry {
       stroke(0);
     }
     fill(243, 228, 59);
-    rect(x, y, TIMESLOT_WIDTH, TIMESLOT_HEIGHT);
+    //rect(x, y, TIMESLOT_WIDTH, TIMESLOT_HEIGHT);
+    image(blocker_image, x, y);
 
     if (conflicting && is_flashing_red()) {
+      image(conflicting_timeslot_image, x, y);
       fill(255, 0, 0);
     } else {
       fill(0);

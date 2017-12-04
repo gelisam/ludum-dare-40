@@ -11,3 +11,7 @@ Fit your features onto the schedule, work around meetings, and leave time for ot
 After all, what's the only thing more fun than crunch mode?  Going back in time to repeat crunch mode again, and again ... and again!!
 
 ![screenshot](https://static.jam.vg/raw/861/z/b281.png)
+
+## Credits
+
+By Michaelson Britt and Samuel Gélineau

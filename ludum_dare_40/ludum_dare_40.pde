@@ -1,3 +1,6 @@
+import processing.sound.*;
+
+
 // CONSTANTS
 
 final int WINDOW_WIDTH = 1280;
@@ -76,6 +79,8 @@ final PVector BOX_CORNER_VLR = new PVector( BOX_CORNER_LR.x, BOX_CORNER_LR.y+1 )
 int global_mode = RIGHT_SLIDE_MODE;
 float global_t = 0.0;
 
+boolean playing_ambient = false;
+
 int current_scenario;
 int current_round;
 
@@ -100,6 +105,7 @@ PImage anchor_image;
 PImage hover_image;
 PImage conflicting_timeslot_image;
 PImage blocker_image;
+SoundFile ambient_sound;
 
 Button refactor_button;
 Button commit_button;
@@ -538,6 +544,7 @@ void setup() {
   hover_image = loadImage("background_timeslot_hover.png");
   conflicting_timeslot_image = loadImage("background_timeslot_conflict.png");
   blocker_image = loadImage("blocker.png");
+  ambient_sound = new SoundFile(this, "ambient.ogg");
 
   // Init buttons
   refactor_button = new Button("REFACTOR", REFACTOR_BUTTON_WIDTH, REFACTOR_BUTTON_HEIGHT);
@@ -647,6 +654,10 @@ void dismiss_slide() {
     global_t = 0.0;
     global_mode = LEFT_SLIDE_OUT_MODE;
   } else if (global_mode == DOWN_SLIDE_MODE) {
+    if (!playing_ambient) {
+      ambient_sound.loop();
+    }
+
     global_t = 0.0;
     global_mode = DOWN_SLIDE_OUT_MODE;
   } else if (global_mode == UP_SLIDE_MODE) {

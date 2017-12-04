@@ -107,6 +107,18 @@ PImage hover_image;
 PImage conflicting_timeslot_image;
 PImage blocker_image;
 SoundFile ambient_sound;
+SoundFile key1a_sound;
+SoundFile key1b_sound;
+SoundFile key2a_sound;
+SoundFile key2b_sound;
+SoundFile key3a_sound;
+SoundFile key3b_sound;
+SoundFile key4a_sound;
+SoundFile key4b_sound;
+SoundFile key5a_sound;
+SoundFile key5b_sound;
+SoundFile key5c_sound;
+SoundFile key6a_sound;
 
 Button refactor_button;
 Button commit_button;
@@ -150,6 +162,11 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       }
     } else if (round == 2) {
       if (for_real) {
+        if (!muted) {
+          key1a_sound.play();
+          delay(600);
+        }
+
         global_slide = new Slide("Scenario 1 - Phase 2");
         global_slide.bullet_points.append("• If you can't resolve code conflicts, you may need to refactor");
         global_slide.bullet_points.append("• Corporate policy: research time is for business purpopses only");
@@ -166,6 +183,11 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       }
     } else if (round == 3) {
       if (for_real) {
+        if (!muted) {
+          key2a_sound.play();
+          delay(700);
+        }
+
         global_slide = new Slide("Scenario 1 - Phase 3");
         global_slide.bullet_points.append("• New corporate priority: Movie Catalog");
 
@@ -187,6 +209,11 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       }
     } else if (round == 4) {
       if (for_real) {
+        if (!muted) {
+          key3a_sound.play();
+          delay(800);
+        }
+
         global_slide = new Slide("Scenario 1 - Phase 4");
         global_slide.bullet_points.append("• New corporate priority: House Appraisal Database");
 
@@ -213,6 +240,11 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       }
     } else if (round == 5) {
       if (for_real) {
+        if (!muted) {
+          key4a_sound.play();
+          delay(1200);
+        }
+
         global_slide = new Slide("Scenario 1 - Final Phase");
         global_slide.bullet_points.append("• New corporate policy: no naps!");
         global_slide.bullet_points.append("• Remember the company's moto: red, green, refactor, refactor, refactor");
@@ -273,6 +305,11 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       }
     } else if (round == 1) {
       if (for_real) {
+        if (!muted) {
+          key5a_sound.play();
+          delay(1500);
+        }
+
         global_slide = new Slide("Congratulations on finishing the tutorial!");
         global_slide.next_slide = new Slide("Scenario 2 - Network code");
         global_slide.next_slide.bullet_points.append("• Management assessment: Piece of cake");
@@ -309,6 +346,11 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       }
     } else if (round == 2) {
       if (for_real) {
+        if (!muted) {
+          key2b_sound.play();
+          delay(700);
+        }
+
         global_slide = new Slide("Scenario 2 - Phase 2 ...");
         global_slide.bullet_points.append("• ...");
         global_slide.bullet_points.append("• ...");
@@ -361,6 +403,11 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       }
     } else if (round == 3) {
       if (for_real) {
+        if (!muted) {
+          key3b_sound.play();
+          delay(800);
+        }
+
         global_slide = new Slide("Scenario 2 - Phase 3");
         global_slide.bullet_points.append("• Client just shortened the deadline");
         global_slide.bullet_points.append("• Fix critical bugs and ship");
@@ -413,6 +460,11 @@ Diagram loadRound(int scenario, int round, boolean for_real)
       }
     } else if (round == 4) {
       if (for_real) {
+        if (!muted) {
+          key4b_sound.play();
+          delay(1100);
+        }
+
         global_slide = new Slide("Scenario 2 - Final Phase");
         global_slide.bullet_points.append("• Client threatening legal action");
         global_slide.bullet_points.append("• Just ship it, by any means possible");
@@ -468,7 +520,14 @@ Diagram loadRound(int scenario, int round, boolean for_real)
     if (round == 0) {
     } else if (round == 1) {
       if (for_real) {
-        global_slide = new Slide("Nework Code is finished!");
+        if (!muted) {
+          key6a_sound.play();
+          delay(1500);
+          key1b_sound.play();
+          delay(600);
+        }
+
+        global_slide = new Slide("Congratulations on finishing the game!");
         global_slide.bullet_points.append("• New corporate priority: Champagne");
         global_slide.bullet_points.append("• New corporate priority: Just kidding, more work");
         global_slide.bullet_points.append("• Did you find all the solutions?");
@@ -546,6 +605,18 @@ void setup() {
   conflicting_timeslot_image = loadImage("background_timeslot_conflict.png");
   blocker_image = loadImage("blocker.png");
   ambient_sound = new SoundFile(this, "ambient.ogg");
+  key1a_sound = new SoundFile(this, "sound_keystroke_1a.ogg");
+  key1b_sound = new SoundFile(this, "sound_keystroke_1b.ogg");
+  key2a_sound = new SoundFile(this, "sound_keystroke_2a.ogg");
+  key2b_sound = new SoundFile(this, "sound_keystroke_2b.ogg");
+  key3a_sound = new SoundFile(this, "sound_keystroke_3a.ogg");
+  key3b_sound = new SoundFile(this, "sound_keystroke_3b.ogg");
+  key4a_sound = new SoundFile(this, "sound_keystroke_4a.ogg");
+  key4b_sound = new SoundFile(this, "sound_keystroke_4b.ogg");
+  key5a_sound = new SoundFile(this, "sound_keystroke_5a.ogg");
+  key5b_sound = new SoundFile(this, "sound_keystroke_5b.ogg");
+  key5c_sound = new SoundFile(this, "sound_keystroke_5c.ogg");
+  key6a_sound = new SoundFile(this, "sound_keystroke_6a.ogg");
 
   // Init buttons
   refactor_button = new Button("REFACTOR", REFACTOR_BUTTON_WIDTH, REFACTOR_BUTTON_HEIGHT);

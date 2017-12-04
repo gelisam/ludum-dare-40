@@ -687,8 +687,14 @@ void commit() {
 
     Diagram next_diagram = loadRound(current_scenario, current_round, true);
     if (next_diagram == null) {
-      loadScenario(is_last_scenario() ? 1 : (current_scenario+1));
-      slide_right();
+      if (is_last_scenario()) {
+        loadScenario(1);
+        global_slide = null;
+        slide_left();
+      } else {
+        loadScenario(current_scenario+1);
+        slide_right();
+      }
     } else {
       global_next_target_diagram = next_diagram;
       slide_down();

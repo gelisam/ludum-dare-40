@@ -1298,7 +1298,7 @@ void draw() {
     global_mode = INTERACTIVE_MODE;
     global_slide = null;
   } else if (global_mode == RIGHT_SLIDE_OUT_MODE && global_t > 0.25) {
-    if (global_slide.next_slide != null) {
+    if (global_slide != null && global_slide.next_slide != null) {
       global_slide = global_slide.next_slide;
       global_mode = DOWN_SLIDE_MODE;
     } else if (global_source_diagram.anchor == null) {

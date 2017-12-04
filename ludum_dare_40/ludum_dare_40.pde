@@ -210,7 +210,7 @@ Diagram loadRound(int scenario, int round, boolean for_real)
     } else if (round == 4) {
       if (for_real) {
         if (!muted) {
-          key3a_sound.play();
+          key3b_sound.play();
           delay(800);
         }
 
@@ -351,10 +351,10 @@ Diagram loadRound(int scenario, int round, boolean for_real)
           delay(700);
         }
 
-        global_slide = new Slide("Scenario 2 - Phase 2 ...");
-        global_slide.bullet_points.append("• ...");
-        global_slide.bullet_points.append("• ...");
-        global_slide.bullet_points.append("• ...");
+        global_slide = new Slide("Scenario 2 - Agile tutorial");
+        global_slide.bullet_points.append("• Limit your resources so you can focus on what's important");
+        global_slide.bullet_points.append("• Make sure everyone is on the same page by meeting early and often");
+        global_slide.bullet_points.append("• Don't run a marathon: run multiple sprints in a row!");
 
 
         for (int j=0; j<6; ++j) {
@@ -530,7 +530,7 @@ Diagram loadRound(int scenario, int round, boolean for_real)
         global_slide = new Slide("Congratulations on finishing the game!");
         global_slide.bullet_points.append("• New corporate priority: Champagne");
         global_slide.bullet_points.append("• New corporate priority: Just kidding, more work");
-        global_slide.bullet_points.append("• Did you find all the solutions?");
+        global_slide.bullet_points.append("• Did you find both solutions?");
 
 
         blocker = new Blocker("by");

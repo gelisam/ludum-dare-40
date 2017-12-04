@@ -80,6 +80,7 @@ int global_mode = RIGHT_SLIDE_MODE;
 float global_t = 0.0;
 
 boolean playing_ambient = false;
+boolean muted = false;
 
 int current_scenario;
 int current_round;
@@ -655,7 +656,11 @@ void dismiss_slide() {
     global_mode = LEFT_SLIDE_OUT_MODE;
   } else if (global_mode == DOWN_SLIDE_MODE) {
     if (!playing_ambient) {
-      ambient_sound.loop();
+      playing_ambient = true;
+
+      if (!muted) {
+        ambient_sound.loop();
+      }
     }
 
     global_t = 0.0;
@@ -1447,6 +1452,18 @@ void keyPressed() {
       refactor();
     } else if (keyCode == RIGHT || keyCode == DOWN || keyCode == ENTER || key == ' ') {
       commit();
+    }
+  }
+
+  if (key == 'm') {
+    muted = !muted;
+
+    if (playing_ambient) {
+      if (muted) {
+        ambient_sound.stop();
+      } else {
+        ambient_sound.loop();
+      }
     }
   }
 }
